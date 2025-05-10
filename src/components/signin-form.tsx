@@ -20,6 +20,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { signIn } from '@/lib/auth-client';
+import { PageRoutes } from '@/constants/page_routes';
+
 
 const formSchema = z.object({
   email: z.string().min(2, {
@@ -36,6 +38,7 @@ export function SigninForm({
 }: React.ComponentProps<'form'>) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,7 +61,10 @@ export function SigninForm({
       });
     } else if (response.data) {
       toast.success('Logged in successfully');
-      router.push('/');
+      document.cookie = `name=${response.data.data.user.name}`
+      document.cookie = `id=${response.data.data.user.id}`
+      
+      router.push(PageRoutes.DASHBOARD);
     }
   };
 

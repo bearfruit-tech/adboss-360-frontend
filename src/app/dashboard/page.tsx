@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { MenuItem } from "@/types/menu-items.enum"
