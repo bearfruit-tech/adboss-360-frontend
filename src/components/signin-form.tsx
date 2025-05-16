@@ -53,7 +53,7 @@ export function SigninForm({
       password: values.password,
     });
 
-    console.log({ response });
+    console.log("login response, " +{ response });
 
     if (response.error) {
       toast.error(response.error.message, {
