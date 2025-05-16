@@ -19,6 +19,9 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { authClient } from '@/lib/auth-client';
+import { getCookie } from 'cookies-next';
+import { Cookies } from '@/constants/cookies';
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -40,6 +43,28 @@ export function CompanyInviteForm({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (values.email) {
       setInvites([...invites, values.email]);
+      alert(getCookie(Cookies.BEARER_TOKEN))
+      await authClient.organization.inviteMember({
+        organizationId: "rv9V2Lr9qJUQWctSUjXWvkNaHFl4wWhe",
+        email: values.email,
+        role: "admin", //this can also be an array for multiple roles (e.g. ["admin", "sale"])
+
+        fetchOptions: {
+          onSuccess: ()=>{
+            toast.success('Invite sent successfully from onSuccess');
+          },
+          onError: ()=>{
+            toast.success('Invite was unsuccessful');
+          },
+          credentials: 'include',
+          auth: {
+            type:"Bearer",
+            token: () => {
+              return getCookie(Cookies.BEARER_TOKEN) || ""
+            }
+          }
+        }
+      })
       form.reset({ email: '' });
       toast.success('Invite sent successfully');
     }

@@ -12,7 +12,10 @@ export const authClient = createAuthClient({
   fetchOptions: {
     async onResponse(context) {
       const setCookieHeader = context.response.headers.get('set-auth-token');
-      setCookie(Cookies.BEARER_TOKEN, setCookieHeader)
+      
+      if(setCookieHeader) {
+        setCookie(Cookies.BEARER_TOKEN, setCookieHeader)
+      }
     },
     credentials: 'include',
     auth: {
