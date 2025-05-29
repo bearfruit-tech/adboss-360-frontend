@@ -12,9 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { valueOptions, problemOptions } from "@/constants/branding_constants";
 import useBrandingStore from "@/stores/use-branding-store";
 
+
 export default function BrandDiscoveryStep() {
   const { brandDiscovery, updateBrandDiscovery, toggleValue, toggleProblem } = useBrandingStore();
-  
+
   // Create helper functions with proper typing
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string): void => {
     updateBrandDiscovery(field, e.target.value);
