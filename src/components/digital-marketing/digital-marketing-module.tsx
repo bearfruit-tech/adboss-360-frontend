@@ -2,6 +2,8 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CampaignTable from './campaign-table';
+import SocialMediaCalendar from './social-media-calendar';
+
 
 export default function DigitalMarketingModule() {
   return (
@@ -21,7 +23,7 @@ export default function DigitalMarketingModule() {
         
         <TabsContent value="social-media" className="mt-6">
           <div className="flex items-center justify-center h-96">
-            <p className="text-lg text-gray-500">Social Media & Content - Coming Soon</p>
+          <SocialMediaCalendar />
           </div>
         </TabsContent>
         
