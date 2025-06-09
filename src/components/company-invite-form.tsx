@@ -20,6 +20,7 @@ import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
+
 import { getCookie } from "cookies-next";
 import { Cookies } from "@/constants/cookies";
 import { authorizedApiRequest } from "@/api";
@@ -47,16 +48,17 @@ export function CompanyInviteForm({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const emails = new Set(invites);
-    if(emails.has(values.email)){
+    if (emails.has(values.email)) {
       toast.warning("An invitation has already been sent!");
       return;
     }
 
-    if(!values.email){
+    if (!values.email) {
       return;
     }
 
     try {
+
       setLoading(true);
       const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/${getCookie(Cookies.ORGANIZATION_ID)}/invitation`;
       await authorizedApiRequest(HttpMethods.POST, url, {
@@ -66,16 +68,15 @@ export function CompanyInviteForm({
         orgName: `${getCookie(Cookies.ORGANIZATION_NAME)}`,
       })
 
+
       setLoading(false);
       setInvites([...invites, values.email]);
       form.reset({ email: "" });
       toast.success("Invitation sent successfully.");
-
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-
   };
 
   const handleFinish = () => {
