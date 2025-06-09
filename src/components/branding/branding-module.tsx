@@ -42,8 +42,9 @@ export interface Brand {
   };
   selectedImages?: number[];
   selectedLogo?: null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  selectedColors?: any[];
+
+  selectedColors?: string[];
+
   selectedFont?: string;
   selectedImagerySet?: null;
   selectedVoiceSet?: null;

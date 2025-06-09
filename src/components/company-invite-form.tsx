@@ -20,11 +20,12 @@ import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
-// import { getCookie } from "cookies-next";
-// import { Cookies } from "@/constants/cookies";
-// import { authorizedApiRequest } from "@/api";
-// import { HttpMethods } from "@/constants/api_methods";
-// import { APIRoutes } from "@/constants/api_routes";
+
+import { getCookie } from "cookies-next";
+import { Cookies } from "@/constants/cookies";
+import { authorizedApiRequest } from "@/api";
+import { HttpMethods } from "@/constants/api_methods";
+import { APIRoutes } from "@/constants/api_routes";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -57,16 +58,16 @@ export function CompanyInviteForm({
     }
 
     try {
-      // setLoading(true);
-      // const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/${getCookie(
-      //   Cookies.ORGANIZATION_ID
-      // )}/invitation`;
-      // const invitation = await authorizedApiRequest(HttpMethods.POST, url, {
-      //   orgId: `${getCookie(Cookies.ORGANIZATION_ID)}`,
-      //   email: values.email,
-      //   userId: `${getCookie(Cookies.ID)}`,
-      //   orgName: `${getCookie(Cookies.ORGANIZATION_NAME)}`,
-      // });
+
+      setLoading(true);
+      const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/${getCookie(Cookies.ORGANIZATION_ID)}/invitation`;
+      await authorizedApiRequest(HttpMethods.POST, url, {
+        orgId: `${getCookie(Cookies.ORGANIZATION_ID)}`,
+        email: values.email,
+        userId: `${getCookie(Cookies.ID)}`,
+        orgName: `${getCookie(Cookies.ORGANIZATION_NAME)}`,
+      })
+
 
       setLoading(false);
       setInvites([...invites, values.email]);
