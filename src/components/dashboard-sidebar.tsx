@@ -77,13 +77,13 @@ export function DashboardSidebar({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild className={activeMenuItem === MenuItem.DigitalMarketing ? "bg-purple-light-bg text-slate-700" : ""}>
-                <Link href="#">
-                  <BarChart2 className="h-5 w-5" />
-                  <span>Digital Marketing</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <SidebarMenuButton asChild className={activeMenuItem === MenuItem.DigitalMarketing ? "bg-purple-light-bg text-slate-700" : ""}>
+              <Link href="/digital-marketing">
+                <BarChart2 className="h-5 w-5" />
+                <span>Digital Marketing</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild className={activeMenuItem === MenuItem.MarketingResearch ? "bg-purple-light-bg text-slate-700" : ""}>
                 <Link href="#">
