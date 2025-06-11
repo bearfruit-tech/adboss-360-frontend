@@ -9,6 +9,17 @@ export interface TargetAudience {
   location: string;
 }
 
+export enum BrandingStep {
+  BRAND_DISCOVERY = 'BRAND_DISCOVERY',
+  VISUAL_INSPIRATION = 'VISUAL_INSPIRATION',
+  LOGO_EXPLORATION = 'LOGO_EXPLORATION',
+  COLOR_HARMONY = 'COLOR_HARMONY',
+  TYPOGRAPHY_SELECTION = 'TYPOGRAPHY_SELECTION',
+  IMAGERY_DIRECTION = 'IMAGERY_DIRECTION',
+  BRAND_VOICE = 'BRAND_VOICE',
+  BRAND_IDENTITY_SUITE = 'BRAND_IDENTITY_SUITE',
+}
+
 export interface BrandPersonality {
   formalCasual: number;
   traditionalModern: number;
@@ -30,6 +41,7 @@ export interface BrandDiscovery {
 }
 
 export interface BrandingState {
+  brandingStep: BrandingStep,
   activeStep: number;
   brandDiscovery: BrandDiscovery;
   selectedImages: number[];
@@ -41,6 +53,7 @@ export interface BrandingState {
   brandFeedback: string;
 
   // Actions
+  UpdateBrandingStep: (step: BrandingStep) => void;
   setActiveStep: (step: number) => void;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
@@ -63,6 +76,7 @@ export interface BrandingState {
 }
 
 const useBrandingStore = create<BrandingState>((set) => ({
+  brandingStep: BrandingStep.BRAND_DISCOVERY,
   activeStep: 0,
   brandDiscovery: {
     targetAudience: {
@@ -97,10 +111,14 @@ const useBrandingStore = create<BrandingState>((set) => ({
 
 
   // Actions
+  UpdateBrandingStep: (step: BrandingStep) => set({brandingStep: step}),
+
   setActiveStep: (step: number) => set({ activeStep: step }),
+
   goToNextStep: () => set((state) => ({
     activeStep: Math.min(7, state.activeStep + 1)
   })),
+
   goToPreviousStep: () => set((state) => ({
     activeStep: Math.max(0, state.activeStep - 1)
   })),
