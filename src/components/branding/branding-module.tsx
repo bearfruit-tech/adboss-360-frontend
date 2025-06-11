@@ -10,7 +10,7 @@ import { APIRoutes } from "@/constants/api_routes";
 import { authorizedApiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
 import ClientProjectSelect from "../client-project-select";
-import useBrandingStore from "@/stores/use-branding-store";
+import useBrandingStore, { BrandingStep } from "@/stores/use-branding-store";
 
 interface TargetAudience {
   ageRange: number[];
@@ -54,6 +54,8 @@ export interface Brand {
 export default function BrandingModule() {
   const [hasBrand, setHasBrand] = useState<boolean>(false);
   const {
+    setActiveStep,
+    UpdateBrandingStep,
     updateValues,
     updateBrandDiscovery,
     updateProblems,
@@ -74,6 +76,35 @@ export default function BrandingModule() {
     }
   }, [currentProject]);
 
+  const updateActiveStepFromSavedStep = (step: BrandingStep) => {
+    switch(step){
+      case BrandingStep.BRAND_DISCOVERY:
+        setActiveStep(0)
+        break
+      case BrandingStep.VISUAL_INSPIRATION:
+        setActiveStep(1)
+        break
+      case BrandingStep.LOGO_EXPLORATION:
+        setActiveStep(2)
+        break
+      case BrandingStep.COLOR_HARMONY:
+        setActiveStep(3)
+        break
+      case BrandingStep.TYPOGRAPHY_SELECTION:
+        setActiveStep(4)
+        break
+      case BrandingStep.IMAGERY_DIRECTION:
+        setActiveStep(5)
+        break
+      case BrandingStep.BRAND_VOICE:
+        setActiveStep(6)
+        break
+      case BrandingStep.BRAND_IDENTITY_SUITE:
+        setActiveStep(7)
+        break
+    }
+  }
+
   const getBranding = async (id: string) => {
     try {
       const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/branding/${id}`;
@@ -81,6 +112,15 @@ export default function BrandingModule() {
       setHasBrand(true);
       if (branding.data) {
         const brandingData: Brand = branding.data.metadata;
+        const brandingSavedStep: BrandingStep = branding.data.brandingStep;
+        
+        // updating current branding step
+        if(brandingSavedStep){
+          UpdateBrandingStep(brandingSavedStep)
+          // update active step 
+          updateActiveStepFromSavedStep(brandingSavedStep)
+        }
+        
         // updating target audience age range
         if (
           brandingData.brandDiscovery?.targetAudience?.ageRange &&
@@ -231,7 +271,6 @@ export default function BrandingModule() {
         }
       }
     } catch (error) {
-      console.log("Oops, no branding!");
       console.log(error);
     }
   };
@@ -251,7 +290,7 @@ export default function BrandingModule() {
           <main className="flex-grow flex">
             {/* Step Content */}
             <div className="flex-grow">
-              <StepContent />
+              <StepContent/>
 
               {/* Navigation Buttons - placed within the content area for proper spacing */}
               <div className="max-w-4xl mx-auto px-6 pb-6">
