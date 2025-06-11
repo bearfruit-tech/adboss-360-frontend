@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface TargetAudience {
   ageRange: [number, number];
@@ -84,7 +84,7 @@ const useBrandingStore = create<BrandingState>((set) => ({
       gender: "",
       income: "",
       education: "",
-      location: ""
+      location: "",
     },
     industry: "",
     values: [],
@@ -93,13 +93,13 @@ const useBrandingStore = create<BrandingState>((set) => ({
     personality: {
       formalCasual: 50,
       traditionalModern: 50,
-      seriousPlayful: 50
+      seriousPlayful: 50,
     },
     problemsSolved: [],
     shortTermGoals: "",
     longTermGoals: "",
     visualPreferences: "",
-    visualAversions: ""
+    visualAversions: "",
   },
   selectedImages: [1, 4, 7],
   selectedLogo: null,
@@ -109,122 +109,132 @@ const useBrandingStore = create<BrandingState>((set) => ({
   selectedVoiceSet: null,
   brandFeedback: "",
 
-
   // Actions
   UpdateBrandingStep: (step: BrandingStep) => set({brandingStep: step}),
 
   setActiveStep: (step: number) => set({ activeStep: step }),
 
-  goToNextStep: () => set((state) => ({
-    activeStep: Math.min(7, state.activeStep + 1)
-  })),
+  goToNextStep: () =>
+    set((state) => ({
+      activeStep: Math.min(7, state.activeStep + 1),
+    })),
+  
+  goToPreviousStep: () =>
+    set((state) => ({
+      activeStep: Math.max(0, state.activeStep - 1),
+    })),
 
-  goToPreviousStep: () => set((state) => ({
-    activeStep: Math.max(0, state.activeStep - 1)
-  })),
+  updateSelectedImages: (values: number[]) =>
+    set((state) => ({
+      ...state,
+      selectedImages: [...values],
+    })),
 
-  updateSelectedImages: (values: number[]) => set((state) => ({
-    ...state,
-    selectedImages: [...values]
-  })),
+  updateSelectedLogo: (value: number) =>
+    set((state) => ({
+      ...state,
+      selectedLogo: value,
+    })),
 
-  updateSelectedLogo: (value: number) => set((state) => ({
-    ...state,
-    selectedLogo: value
-  })),
+  updateImagerySet: (value: string) =>
+    set((state) => ({
+      ...state,
+      selectedImagerySet: value,
+    })),
 
-  updateImagerySet: (value:string) => set((state) => ({
-    ...state,
-    selectedImagerySet: value
-  })),
+  updateVoiceSet: (value: string) =>
+    set((state) => ({
+      ...state,
+      selectedVoiceSet: value,
+    })),
 
-  updateVoiceSet: (value: string) => set((state) => ({
-    ...state,
-    selectedVoiceSet: value
-  })),
+  updateBrandDiscovery: (field: string, value: any) =>
+    set((state) => {
+      const newState = { ...state };
+      const newBrandDiscovery = { ...newState.brandDiscovery };
 
-  updateBrandDiscovery: (field: string, value: any) => set((state) => {
-    const newState = { ...state };
-    const newBrandDiscovery = { ...newState.brandDiscovery };
+      // Handle nested objects
+      if (field.includes(".")) {
+        const [parent, child] = field.split(".");
+        // Use type assertion to tell TypeScript it's safe to access this property
+        (newBrandDiscovery as any)[parent] = {
+          ...(newBrandDiscovery as any)[parent],
+          [child]: value,
+        };
+      } else {
+        // Use type assertion for setting properties dynamically
+        (newBrandDiscovery as any)[field] = value;
+      }
+      return { brandDiscovery: newBrandDiscovery };
+    }),
 
-    // Handle nested objects
-    if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      // Use type assertion to tell TypeScript it's safe to access this property
-      (newBrandDiscovery as any)[parent] = {
-        ...(newBrandDiscovery as any)[parent],
-        [child]: value
+  toggleValue: (valueId: string) =>
+    set((state) => {
+      const values = [...state.brandDiscovery.values];
+      const index = values.indexOf(valueId);
+
+      if (index !== -1) {
+        values.splice(index, 1);
+      } else {
+        values.push(valueId);
+      }
+
+      return {
+        brandDiscovery: {
+          ...state.brandDiscovery,
+          values,
+        },
       };
-    } else {
-      // Use type assertion for setting properties dynamically
-      (newBrandDiscovery as any)[field] = value;
-    }
+    }),
 
-    return { brandDiscovery: newBrandDiscovery };
-  }),
-
-  toggleValue: (valueId: string) => set((state) => {
-    const values = [...state.brandDiscovery.values];
-    const index = values.indexOf(valueId);
-
-    if (index !== -1) {
-      values.splice(index, 1);
-    } else {
-      values.push(valueId);
-    }
-
-    return {
+  updateValues: (values: string[]) =>
+    set((state) => ({
       brandDiscovery: {
         ...state.brandDiscovery,
-        values
-      }
-    };
-  }),
+        values: [...values],
+      },
+    })),
 
-  updateValues: (values: string[]) => set((state) => ({
-    brandDiscovery: {
-      ...state.brandDiscovery,
-      values: [...values]
-    }
-  })),
-
-  updateProblems: (values: string[]) => set((state) => ({
-    brandDiscovery: {
-      ...state.brandDiscovery,
-      problemsSolved: [...values]
-    }
-  })),
-
-  toggleProblem: (problemId: string) => set((state) => {
-    const problems = [...state.brandDiscovery.problemsSolved];
-    const index = problems.indexOf(problemId);
-
-    if (index !== -1) {
-      problems.splice(index, 1);
-    } else {
-      problems.push(problemId);
-    }
-
-    return {
+  updateProblems: (values: string[]) =>
+    set((state) => ({
       brandDiscovery: {
         ...state.brandDiscovery,
-        problemsSolved: problems
+        problemsSolved: [...values],
+      },
+    })),
+
+  toggleProblem: (problemId: string) =>
+    set((state) => {
+      const problems = [...state.brandDiscovery.problemsSolved];
+      const index = problems.indexOf(problemId);
+
+      if (index !== -1) {
+        problems.splice(index, 1);
+      } else {
+        problems.push(problemId);
       }
-    };
-  }),
 
-  toggleImageSelection: (index: number) => set((state) => {
-    const selectedImages = [...state.selectedImages];
-    const imageIndex = selectedImages.indexOf(index);
+      return {
+        brandDiscovery: {
+          ...state.brandDiscovery,
+          problemsSolved: problems,
+        },
+      };
+    }),
 
-    if (imageIndex !== -1) {
-      selectedImages.splice(imageIndex, 1);
-    } else if (selectedImages.length < 5) {
-      selectedImages.push(index);
-    }
+  toggleImageSelection: (index: number) =>
+    set((state) => {
+      const selectedImages = [...state.selectedImages];
+      const imageIndex = selectedImages.indexOf(index);
 
-    return { selectedImages };
-  }),
+      if (imageIndex !== -1) {
+        selectedImages.splice(imageIndex, 1);
+      } else if (selectedImages.length < 5) {
+        selectedImages.push(index);
+      }
+
+      return { selectedImages };
+    }),
 
   setSelectedLogo: (index: number) => set({ selectedLogo: index }),
 
