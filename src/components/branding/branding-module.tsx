@@ -10,7 +10,9 @@ import { APIRoutes } from "@/constants/api_routes";
 import { authorizedApiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
 import ClientProjectSelect from "../client-project-select";
-import useBrandingStore, { BrandingStep } from "@/stores/use-branding-store";
+import useBrandingStore from "@/stores/use-branding-store";
+import { BrandingStep } from "@/types/branding/branding-step.enum";
+import { BrandPersonality } from "@/types/branding/brand-personality.interface";
 
 interface TargetAudience {
   ageRange: number[];
@@ -20,12 +22,6 @@ interface TargetAudience {
   location: string;
 }
 
-interface Personality {
-  formalCasual: number;
-  traditionalModern: number;
-  seriousPlayful: number;
-}
-
 export interface Brand {
   brandDiscovery?: {
     targetAudience?: TargetAudience;
@@ -33,7 +29,7 @@ export interface Brand {
     values?: string[];
     competitors?: string;
     differentiation?: string;
-    personality?: Personality;
+    personality?: BrandPersonality;
     problemsSolved?: string[];
     shortTermGoals?: string;
     longTermGoals?: string;
