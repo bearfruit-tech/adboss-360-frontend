@@ -10,36 +10,12 @@ import { APIRoutes } from "@/constants/api_routes";
 import { authorizedApiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
 import ClientProjectSelect from "../client-project-select";
-import useBrandingStore, { BrandingStep } from "@/stores/use-branding-store";
-
-interface TargetAudience {
-  ageRange: number[];
-  gender: string;
-  income: string;
-  education: string;
-  location: string;
-}
-
-interface Personality {
-  formalCasual: number;
-  traditionalModern: number;
-  seriousPlayful: number;
-}
+import useBrandingStore from "@/stores/use-branding-store";
+import { BrandingStep } from "@/types/branding/branding-step.enum";
+import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
 
 export interface Brand {
-  brandDiscovery?: {
-    targetAudience?: TargetAudience;
-    industry?: string;
-    values?: string[];
-    competitors?: string;
-    differentiation?: string;
-    personality?: Personality;
-    problemsSolved?: string[];
-    shortTermGoals?: string;
-    longTermGoals?: string;
-    visualPreferences?: string;
-    visualAversions?: string;
-  };
+  brandDiscovery?: BrandDiscovery;
   selectedImages?: number[];
   selectedLogo?: null;
 

@@ -1,44 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
+import { BrandingStep } from "@/types/branding/branding-step.enum"
 import { create } from "zustand";
-
-export interface TargetAudience {
-  ageRange: [number, number];
-  gender: string;
-  income: string;
-  education: string;
-  location: string;
-}
-
-export enum BrandingStep {
-  BRAND_DISCOVERY = 'BRAND_DISCOVERY',
-  VISUAL_INSPIRATION = 'VISUAL_INSPIRATION',
-  LOGO_EXPLORATION = 'LOGO_EXPLORATION',
-  COLOR_HARMONY = 'COLOR_HARMONY',
-  TYPOGRAPHY_SELECTION = 'TYPOGRAPHY_SELECTION',
-  IMAGERY_DIRECTION = 'IMAGERY_DIRECTION',
-  BRAND_VOICE = 'BRAND_VOICE',
-  BRAND_IDENTITY_SUITE = 'BRAND_IDENTITY_SUITE',
-}
-
-export interface BrandPersonality {
-  formalCasual: number;
-  traditionalModern: number;
-  seriousPlayful: number;
-}
-
-export interface BrandDiscovery {
-  targetAudience: TargetAudience;
-  industry: string;
-  values: string[];
-  competitors: string;
-  differentiation: string;
-  personality: BrandPersonality;
-  problemsSolved: string[];
-  shortTermGoals: string;
-  longTermGoals: string;
-  visualPreferences: string;
-  visualAversions: string;
-}
 
 export interface BrandingState {
   brandingStep: BrandingStep,
