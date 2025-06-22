@@ -12,30 +12,10 @@ import { HttpMethods } from "@/constants/api_methods";
 import ClientProjectSelect from "../client-project-select";
 import useBrandingStore from "@/stores/use-branding-store";
 import { BrandingStep } from "@/types/branding/branding-step.enum";
-import { BrandPersonality } from "@/types/branding/brand-personality.interface";
-
-interface TargetAudience {
-  ageRange: number[];
-  gender: string;
-  income: string;
-  education: string;
-  location: string;
-}
+import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
 
 export interface Brand {
-  brandDiscovery?: {
-    targetAudience?: TargetAudience;
-    industry?: string;
-    values?: string[];
-    competitors?: string;
-    differentiation?: string;
-    personality?: BrandPersonality;
-    problemsSolved?: string[];
-    shortTermGoals?: string;
-    longTermGoals?: string;
-    visualPreferences?: string;
-    visualAversions?: string;
-  };
+  brandDiscovery?: BrandDiscovery;
   selectedImages?: number[];
   selectedLogo?: null;
 
