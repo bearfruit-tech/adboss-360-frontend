@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
 import { BrandingStep } from "@/types/branding/branding-step.enum"
+import { TargetAudience, TargetAudienceType } from "@/types/branding/target-audience.interface";
 import { create } from "zustand";
 
 export interface BrandingState {
+  newTargetAudience: TargetAudience,
+
   brandingStep: BrandingStep,
   activeStep: number;
   brandDiscovery: BrandDiscovery;
@@ -36,19 +39,38 @@ export interface BrandingState {
   updateSelectedLogo: (value: number) => void;
   updateImagerySet: (value: string) => void;
   updateVoiceSet: (value: string) => void;
+  updateTargetAudience: (values: TargetAudience) => void;
 }
 
+// {
+//       ageRange: [25, 40],
+//       gender: "",
+//       income: "",
+//       education: "",
+//       location: "",
+//     },
+
 const useBrandingStore = create<BrandingState>((set) => ({
-  brandingStep: BrandingStep.BRAND_DISCOVERY,
-  activeStep: 0,
-  brandDiscovery: {
-    targetAudience: {
-      ageRange: [25, 40],
+  newTargetAudience: {
+      targetAudienceType: TargetAudienceType.BUSINESS,
+      companySize: "",
+      industry: "",
+      annualRevenue: "",
+      decisionMakerRole: "",
+      geographicMarket: "",
+      ageRange: [0, 0],
       gender: "",
       income: "",
       education: "",
       location: "",
-    },
+  },
+
+  brandingStep: BrandingStep.BRAND_DISCOVERY,
+  activeStep: 0,
+  brandDiscovery: {
+    businessName:"",
+    businessDescription: "",
+    targetAudience: [],
     industry: "",
     values: [],
     competitors: "",
@@ -206,6 +228,13 @@ const useBrandingStore = create<BrandingState>((set) => ({
   setSelectedImagerySet: (setId: string) => set({ selectedImagerySet: setId }),
   setSelectedVoiceSet: (setId: string) => set({ selectedVoiceSet: setId }),
   setBrandFeedback: (feedback: string) => set({ brandFeedback: feedback }),
+
+  updateTargetAudience: (value: TargetAudience) => set((state) => ({
+    brandDiscovery: {
+      ...state.brandDiscovery,
+      targetAudience: [...state.brandDiscovery.targetAudience, value]
+    }
+  }))
 }));
 
 export default useBrandingStore;

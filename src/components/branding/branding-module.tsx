@@ -96,11 +96,12 @@ export default function BrandingModule() {
           // update active step 
           updateActiveStepFromSavedStep(brandingSavedStep)
         }
-        
+        /*
         // updating target audience age range
         if (
-          brandingData.brandDiscovery?.targetAudience?.ageRange &&
-          brandingData.brandDiscovery.targetAudience.ageRange.length > 0
+          brandingData.brandDiscovery?.targetAudience[0] &&
+          brandingData.brandDiscovery?.targetAudience[0].ageRange &&
+          brandingData.brandDiscovery.targetAudience[0].ageRange.length > 0
         ) {
           updateBrandDiscovery(
             "targetAudience.ageRange",
@@ -135,6 +136,8 @@ export default function BrandingModule() {
             brandingData.brandDiscovery.targetAudience.location
           );
         }
+
+        */
         // udpdating industry
         if (brandingData.brandDiscovery?.industry) {
           updateBrandDiscovery(

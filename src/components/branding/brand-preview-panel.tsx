@@ -49,37 +49,39 @@ export default function BrandPreviewPanel() {
         </div>
 
         <div className="space-y-6">
-          {activeStep >= 0 && (
+          
+          {/* {activeStep >= 0 && (
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-2">
                 Target Audience
               </h4>
               <div className="bg-gray-100 rounded-md p-3 text-sm text-gray-600">
-                {brandDiscovery.targetAudience.ageRange[0] &&
-                brandDiscovery.targetAudience.ageRange[1] ? (
+                {brandDiscovery.targetAudience[0].ageRange[0] &&
+                brandDiscovery.targetAudience[0].ageRange[1] ? (
                   <p>
-                    {brandDiscovery.targetAudience.ageRange[0]}-
-                    {brandDiscovery.targetAudience.ageRange[1]} year olds
+                    {brandDiscovery.targetAudience[0].ageRange[0]}-
+                    {brandDiscovery.targetAudience[0].ageRange[1]} year olds
                   </p>
                 ) : (
                   <p>25-40 year old professionals</p>
                 )}
-                {brandDiscovery.targetAudience.gender && (
-                  <p>{brandDiscovery.targetAudience.gender}</p>
+                {brandDiscovery.targetAudience[0].gender && (
+                  <p>{brandDiscovery.targetAudience[0].gender}</p>
                 )}
-                {brandDiscovery.targetAudience.education && (
-                  <p>{brandDiscovery.targetAudience.education} Level</p>
+                {brandDiscovery.targetAudience[0].education && (
+                  <p>{brandDiscovery.targetAudience[0].education} Level</p>
                 )}
-                {brandDiscovery.targetAudience.income && (
-                  <p>{brandDiscovery.targetAudience.income} Income level</p>
+                {brandDiscovery.targetAudience[0].income && (
+                  <p>{brandDiscovery.targetAudience[0].income} Income level</p>
                 )}
                 <p>
-                  {brandDiscovery.targetAudience.location ||
+                  {brandDiscovery.targetAudience[0].location ||
                     "Urban, tech-savvy"}
                 </p>
               </div>
             </div>
           )}
+           */}
 
           {activeStep >= 0 && brandDiscovery.industry && (
             <div>
