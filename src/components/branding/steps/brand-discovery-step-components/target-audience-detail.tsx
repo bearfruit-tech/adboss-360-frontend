@@ -140,6 +140,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Company Size" className="mb-2 block">Company Size</Label>
                   <Select 
                     value={targetAudience.companySize}
+                    disabled
                     // onValueChange={(value) => setTargetAudience({...targetAudience, companySize: value})}
                   >
                     <SelectTrigger id="companySize">
@@ -157,6 +158,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Industry/Sector" className="mb-2 block">Industry/Sector</Label>
                   <Select 
                     value={targetAudience.industry}
+                    disabled
                     // onValueChange={(value) => setTargetAudience({...targetAudience,industry: value })}
                   >
                     <SelectTrigger id="Industry/Sector">
@@ -181,6 +183,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Annual Revenue Range" className="mb-2 block">Annual Revenue Range</Label>
                   <Select 
                     value={targetAudience.annualRevenue}
+                    disabled
                     // onValueChange={(value) => setTargetAudience({...targetAudience, annualRevenue: value})}
                   >
                     <SelectTrigger id="AnnualRevenueRange">
@@ -199,6 +202,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Decision Maker Role/Level" className="mb-2 block">Decision Maker Role/Level</Label>
                   <Select 
                     value={targetAudience.decisionMakerRole}
+                    disabled
                     // onValueChange={(value) => setTargetAudience({...targetAudience, decisionMakerRole: value})}
                   >
                     <SelectTrigger id="DecisionMakerRole/Level">
@@ -219,6 +223,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Geographic Market" className="mb-2 block">Geographic Market</Label>
                   <Select 
                     value={targetAudience.geographicMarket}
+                    disabled
                     // onValueChange={(value) => setTargetAudience({...targetAudience,geographicMarket: value})}
                   >
                     <SelectTrigger id="GeographicMarket">

@@ -215,12 +215,14 @@ const useBrandingStore = create<BrandingState>((set) => ({
       targetAudience: [...state.brandDiscovery.targetAudience, value]
     }
   })),
+
   updateTargetAudienceValues: (values: TargetAudience[]) => set((state) => ({
     brandDiscovery: {
       ...state.brandDiscovery,
       targetAudience: [...state.brandDiscovery.targetAudience, ...values]
     }
   })),
+  
   removeTargetAudienceItem: (id: string) => set((state) => ({
     brandDiscovery :{
       ...state.brandDiscovery,
