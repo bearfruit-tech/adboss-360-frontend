@@ -4,11 +4,12 @@ import useBrandingStore from "@/stores/use-branding-store";
 import { BrandingStep } from "@/types/branding/branding-step.enum"
 import useProjectStore from "@/stores/use-project-store";
 import { APIRoutes } from "@/constants/api_routes";
-import { authorizedApiRequest } from "@/api";
+import {  authorizedApiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import { BrandingStep } from "@/types/branding/branding-step.enum";
 
 interface Props {
   hasBrand: boolean

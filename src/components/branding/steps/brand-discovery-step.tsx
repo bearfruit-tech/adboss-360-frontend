@@ -4,13 +4,13 @@ import { ChangeEvent } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { valueOptions, problemOptions } from "@/constants/branding_constants";
 import useBrandingStore from "@/stores/use-branding-store";
+import TargerAudienceForm from './brand-discovery-step-components/target-audience-form';
 
 
 export default function BrandDiscoveryStep() {
@@ -33,105 +33,43 @@ export default function BrandDiscoveryStep() {
       </div>
       
       <div className="space-y-8">
-        {/* Question 1 - Target Audience */}
+        {/* Question 1 - Business Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Describe your business</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-3">
+              <Label htmlFor="businessName" className="mb-2 block">What is the name of your business/brand?</Label>
+              <Input 
+              value={brandDiscovery.businessName}
+              onChange={(e) => handleTextChange(e, 'businessName')}
+            />
+            </div>
+            <div>
+              <Label htmlFor="businessDescription" className="mb-2 block">Describe what your business does in 1-3 sentences</Label>
+              <Textarea 
+                id="businessDescription" 
+                value={brandDiscovery.businessDescription}
+                onChange={(e) => handleTextChange(e, 'businessDescription')}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        {/* End Question 1 */}
+
+
+        {/* Question 2 - Target Audience */}
         <Card>
           <CardHeader>
             <CardTitle>Who is your primary target audience?</CardTitle>
             <CardDescription>Define the demographics of your ideal customers.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label className="mb-2 block">Age Range</Label>
-              <div className="flex items-center gap-4">
-                <span className="text-sm">{brandDiscovery.targetAudience.ageRange[0]}</span>
-                <Slider 
-                  defaultValue={brandDiscovery.targetAudience.ageRange} 
-                  min={18} 
-                  max={65} 
-                  step={1} 
-                  onValueChange={(value) => updateBrandDiscovery('targetAudience.ageRange', value)}
-                  className="flex-1"
-                />
-                <span className="text-sm">{brandDiscovery.targetAudience.ageRange[1]}</span>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="gender" className="mb-2 block">Gender Distribution</Label>
-                <Select 
-                  value={brandDiscovery.targetAudience.gender}
-                  onValueChange={(value) => updateBrandDiscovery('targetAudience.gender', value)}
-                >
-                  <SelectTrigger id="gender">
-                    <SelectValue placeholder="Select gender distribution" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="predominantly-male">Predominantly Male</SelectItem>
-                    <SelectItem value="predominantly-female">Predominantly Female</SelectItem>
-                    <SelectItem value="equal-distribution">Equal Distribution</SelectItem>
-                    <SelectItem value="non-binary-focus">Primarily Non-binary</SelectItem>
-                    <SelectItem value="all-inclusive">All Inclusive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="income" className="mb-2 block">Income Level</Label>
-                <Select 
-                  value={brandDiscovery.targetAudience.income}
-                  onValueChange={(value) => updateBrandDiscovery('targetAudience.income', value)}
-                >
-                  <SelectTrigger id="income">
-                    <SelectValue placeholder="Select income level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="budget">Budget-conscious</SelectItem>
-                    <SelectItem value="middle">Middle income</SelectItem>
-                    <SelectItem value="upper-middle">Upper middle income</SelectItem>
-                    <SelectItem value="affluent">Affluent</SelectItem>
-                    <SelectItem value="luxury">Luxury</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="education" className="mb-2 block">Education Level</Label>
-                <Select 
-                  value={brandDiscovery.targetAudience.education}
-                  onValueChange={(value) => updateBrandDiscovery('targetAudience.education', value)}
-                >
-                  <SelectTrigger id="education">
-                    <SelectValue placeholder="Select education level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high-school">High School</SelectItem>
-                    <SelectItem value="some-college">Some College</SelectItem>
-                    <SelectItem value="bachelors">Bachelor&apos;s Degree</SelectItem>
-                    <SelectItem value="masters">Master&apos;s Degree</SelectItem>
-                    <SelectItem value="phd">PhD or Doctorate</SelectItem>
-                    <SelectItem value="mixed">Mixed Education Levels</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="location" className="mb-2 block">Geographic Location</Label>
-                <Input 
-                  id="location" 
-                  placeholder="Urban, Rural, Global, Region names..."
-                  value={brandDiscovery.targetAudience.location}
-                  onChange={(e) => handleTextChange(e, 'targetAudience.location')}
-                />
-              </div>
-            </div>
-          </CardContent>
+          <TargerAudienceForm />
         </Card>
-        {/* End Question 1 */}
+        {/* End Question 2 */}
         
-        {/* Question 2 - Industry */}
+        {/* Question 3 - Industry */}
         <Card>
           <CardHeader>
             <CardTitle>How would you describe your brand&apos;s industry or sector?</CardTitle>
@@ -145,9 +83,9 @@ export default function BrandDiscoveryStep() {
             />
           </CardContent>
         </Card>
-        {/* End Question 2 */}
+        {/* End Question 3 */}
         
-        {/* Question 3 - Values */}
+        {/* Question 4 - Values */}
         <Card>
           <CardHeader>
             <CardTitle>What are the top 3 values your brand stands for?</CardTitle>
@@ -174,9 +112,9 @@ export default function BrandDiscoveryStep() {
             </div>
           </CardContent>
         </Card>
-        {/* End Question 3 */}
+        {/* End Question 4 */}
         
-        {/* Question 4 - Competitors and Differentiation */}
+        {/* Question 5 - Competitors and Differentiation */}
         <Card>
           <CardHeader>
             <CardTitle>Who are your main competitors, and how would you like to differentiate from them?</CardTitle>
@@ -203,9 +141,9 @@ export default function BrandDiscoveryStep() {
             </div>
           </CardContent>
         </Card>
-        {/* End Question 4 */}
+        {/* End Question 5 */}
         
-        {/* Question 5 - Brand Personality */}
+        {/* Question 6 - Brand Personality */}
         <Card>
           <CardHeader>
             <CardTitle>If your brand were a person, how would you describe their personality?</CardTitle>
@@ -252,9 +190,9 @@ export default function BrandDiscoveryStep() {
             </div>
           </CardContent>
         </Card>
-        {/* End Question 5 */}
+        {/* End Question 6 */}
         
-        {/* Question 6 - Problems Solved */}
+        {/* Question 7 - Problems Solved */}
         <Card>
           <CardHeader>
             <CardTitle>What problems does your brand solve for customers?</CardTitle>
@@ -280,9 +218,9 @@ export default function BrandDiscoveryStep() {
             </div>
           </CardContent>
         </Card>
-        {/* End Question 6 */}
+        {/* End Question 7 */}
         
-        {/* Question 7 - Business Goals */}
+        {/* Question 8 - Business Goals */}
         <Card>
           <CardHeader>
             <CardTitle>What are your short-term and long-term business goals?</CardTitle>
@@ -309,9 +247,9 @@ export default function BrandDiscoveryStep() {
             </div>
           </CardContent>
         </Card>
-        {/* End Question 7 */}
+        {/* End Question 8 */}
         
-        {/* Question 8 - Visual Elements */}
+        {/* Question 9 - Visual Elements */}
         <Card>
           <CardHeader>
             <CardTitle>Are there any specific visual elements or themes you&apos;d like to include or avoid?</CardTitle>
@@ -338,7 +276,7 @@ export default function BrandDiscoveryStep() {
             </div>
           </CardContent>
         </Card>
-        {/* End Question 8 */}
+        {/* End Question 9 */}
       </div>
     </>
   );

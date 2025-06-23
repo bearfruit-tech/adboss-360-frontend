@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
 import { BrandingStep } from "@/types/branding/branding-step.enum"
+import { TargetAudience} from "@/types/branding/target-audience.interface";
 import { create } from "zustand";
 
 export interface BrandingState {
+
   brandingStep: BrandingStep,
   activeStep: number;
   brandDiscovery: BrandDiscovery;
@@ -36,19 +38,19 @@ export interface BrandingState {
   updateSelectedLogo: (value: number) => void;
   updateImagerySet: (value: string) => void;
   updateVoiceSet: (value: string) => void;
+  updateTargetAudience: (values: TargetAudience) => void;
+  updateTargetAudienceValues: (values: TargetAudience[]) => void
+  removeTargetAudienceItem: (id: string) => void
 }
 
 const useBrandingStore = create<BrandingState>((set) => ({
+
   brandingStep: BrandingStep.BRAND_DISCOVERY,
   activeStep: 0,
   brandDiscovery: {
-    targetAudience: {
-      ageRange: [25, 40],
-      gender: "",
-      income: "",
-      education: "",
-      location: "",
-    },
+    businessName:"",
+    businessDescription: "",
+    targetAudience: [],
     industry: "",
     values: [],
     competitors: "",
@@ -206,6 +208,27 @@ const useBrandingStore = create<BrandingState>((set) => ({
   setSelectedImagerySet: (setId: string) => set({ selectedImagerySet: setId }),
   setSelectedVoiceSet: (setId: string) => set({ selectedVoiceSet: setId }),
   setBrandFeedback: (feedback: string) => set({ brandFeedback: feedback }),
+
+  updateTargetAudience: (value: TargetAudience) => set((state) => ({
+    brandDiscovery: {
+      ...state.brandDiscovery,
+      targetAudience: [...state.brandDiscovery.targetAudience, value]
+    }
+  })),
+
+  updateTargetAudienceValues: (values: TargetAudience[]) => set((state) => ({
+    brandDiscovery: {
+      ...state.brandDiscovery,
+      targetAudience: [...state.brandDiscovery.targetAudience, ...values]
+    }
+  })),
+  
+  removeTargetAudienceItem: (id: string) => set((state) => ({
+    brandDiscovery :{
+      ...state.brandDiscovery,
+      targetAudience: [...state.brandDiscovery.targetAudience.filter(aud => aud.uniqueId != id)]
+    }
+  }))
 }));
 
 export default useBrandingStore;
