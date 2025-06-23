@@ -14,10 +14,29 @@ import useBrandingStore from "@/stores/use-branding-store";
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { TargetAudience, TargetAudienceType } from '@/types/branding/target-audience.interface';
 import { Button } from '@/components/ui/button';
+import TargetAudienceDetails from './brand-discovery-step-components/target-audience-detail';
 
 const TargerAudienceSection = () => {
-  const [businessType, setBusinessType] = useState<TargetAudienceType|string>()
-    const [targetAudience, setTargetAudience] = useState<TargetAudience>({
+  const [businessType, setBusinessType] = useState<string>()
+  const [targetAudience, setTargetAudience] = useState<TargetAudience>({
+    targetAudienceType: TargetAudienceType.BUSINESS,
+    companySize: "",
+    industry: "",
+    annualRevenue: "",
+    decisionMakerRole: "",
+    geographicMarket: "",
+    ageRange: [0, 0],
+    gender: "",
+    income: "",
+    education: "",
+    location: ""
+  })
+  const {updateTargetAudience, brandDiscovery} = useBrandingStore()
+
+  const addTargetAudience = () => {
+    updateTargetAudience(targetAudience)
+    setBusinessType(TargetAudienceType.BUSINESS)
+    setTargetAudience({
       targetAudienceType: TargetAudienceType.BUSINESS,
       companySize: "",
       industry: "",
@@ -30,20 +49,18 @@ const TargerAudienceSection = () => {
       education: "",
       location: ""
     })
-    const {updateTargetAudience, brandDiscovery} = useBrandingStore()
+  }
 
   return (
     <>  
-        {brandDiscovery.targetAudience.length && brandDiscovery.targetAudience.map((audience, i) => (
-          <CardContent key={i}>
-            <h1>Lorem ipsum dolor sit amet.</h1>
-          </CardContent>
+        {brandDiscovery.targetAudience.length >= 1 && brandDiscovery.targetAudience.map((audience, i) => (
+          <TargetAudienceDetails targetAudience={audience} key={i}/>
         ))}
 
-        <CardContent className="space-y-4 border-2 mx-2 py-4 mb-3 rounded-lg">
+        <CardContent className="space-y-4 ">
             <div className="mb-5">
               <Label htmlFor="targetAudienceType" className="mb-4 block">Is your target audience an individual consumer or a business?</Label>
-              <RadioGroup defaultValue={TargetAudienceType.BUSINESS} onValueChange={setBusinessType}>
+              <RadioGroup defaultValue={TargetAudienceType.BUSINESS} onValueChange={(v) => {setBusinessType(v); setTargetAudience({...targetAudience, targetAudienceType: v as TargetAudienceType})}}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value={TargetAudienceType.INDIVIDUAL_CONSUMER} />
@@ -69,7 +86,7 @@ const TargerAudienceSection = () => {
                   onValueChange={(value) => setTargetAudience({...targetAudience, ageRange:[value[0], value[1]]})}
                   className="flex-1"
                 />
-                {/* <span className="text-sm">{brandDiscovery.targetAudience[0].ageRange[1] ?? "hello"}</span> */}
+                <span className="text-sm">{targetAudience.ageRange[1]}</span>
               </div>
             </div>
             
@@ -144,7 +161,7 @@ const TargerAudienceSection = () => {
                 />
               </div>
             </div>
-            {businessType != "" && businessType == TargetAudienceType.INDIVIDUAL_CONSUMER &&
+            {businessType != undefined && businessType == TargetAudienceType.INDIVIDUAL_CONSUMER &&
              <div className="">
               <div className="grid grid-cols-2 gap-4 mb-3">
                 <div className="">
@@ -249,9 +266,8 @@ const TargerAudienceSection = () => {
             }
 
           </CardContent>
-          <div className="pl-6 flex items-center gap-4">
-            <Button onClick={() => updateTargetAudience(targetAudience)}>Save</Button>
-            <Button>Add</Button>
+          <div className='pl-6'>
+            <Button onClick={() => addTargetAudience()}>Add</Button>
           </div>
       </>
   )

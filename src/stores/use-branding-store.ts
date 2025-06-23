@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
 import { BrandingStep } from "@/types/branding/branding-step.enum"
-import { TargetAudience, TargetAudienceType } from "@/types/branding/target-audience.interface";
+import { TargetAudience} from "@/types/branding/target-audience.interface";
 import { create } from "zustand";
 
 export interface BrandingState {
-  newTargetAudience: TargetAudience,
 
   brandingStep: BrandingStep,
   activeStep: number;
@@ -42,28 +41,7 @@ export interface BrandingState {
   updateTargetAudience: (values: TargetAudience) => void;
 }
 
-// {
-//       ageRange: [25, 40],
-//       gender: "",
-//       income: "",
-//       education: "",
-//       location: "",
-//     },
-
 const useBrandingStore = create<BrandingState>((set) => ({
-  newTargetAudience: {
-      targetAudienceType: TargetAudienceType.BUSINESS,
-      companySize: "",
-      industry: "",
-      annualRevenue: "",
-      decisionMakerRole: "",
-      geographicMarket: "",
-      ageRange: [0, 0],
-      gender: "",
-      income: "",
-      education: "",
-      location: "",
-  },
 
   brandingStep: BrandingStep.BRAND_DISCOVERY,
   activeStep: 0,
