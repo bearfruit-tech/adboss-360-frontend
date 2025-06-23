@@ -40,6 +40,7 @@ export interface BrandingState {
   updateVoiceSet: (value: string) => void;
   updateTargetAudience: (values: TargetAudience) => void;
   updateTargetAudienceValues: (values: TargetAudience[]) => void
+  removeTargetAudienceItem: (id: string) => void
 }
 
 const useBrandingStore = create<BrandingState>((set) => ({
@@ -218,6 +219,12 @@ const useBrandingStore = create<BrandingState>((set) => ({
     brandDiscovery: {
       ...state.brandDiscovery,
       targetAudience: [...state.brandDiscovery.targetAudience, ...values]
+    }
+  })),
+  removeTargetAudienceItem: (id: string) => set((state) => ({
+    brandDiscovery :{
+      ...state.brandDiscovery,
+      targetAudience: [...state.brandDiscovery.targetAudience.filter(aud => aud.uniqueId != id)]
     }
   }))
 }));

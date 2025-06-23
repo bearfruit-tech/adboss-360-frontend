@@ -1,4 +1,5 @@
 export interface TargetAudience {
+  uniqueId: string,
   targetAudienceType: string,
   companySize?: string,
   industry?: string,

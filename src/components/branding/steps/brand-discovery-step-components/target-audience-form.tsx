@@ -1,47 +1,79 @@
-import { Button } from "@/components/ui/button"
-import { CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
 import useBrandingStore from "@/stores/use-branding-store"
 import { TargetAudience, TargetAudienceType } from "@/types/branding/target-audience.interface"
-import { XIcon } from "lucide-react"
+import { useState } from "react"
+import TargetAudienceDetails from "./target-audience-detail"
+import { CardContent } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Slider } from "@/components/ui/slider"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import ShortUniqueId from 'short-unique-id';
 
-type Props = {
-    targetAudience: TargetAudience,
-}
+const TargerAudienceForm = () => {
+  const [businessType, setBusinessType] = useState<string>()
+  const [targetAudience, setTargetAudience] = useState<TargetAudience>({
+    uniqueId: "",
+    targetAudienceType: TargetAudienceType.BUSINESS,
+    companySize: "",
+    industry: "",
+    annualRevenue: "",
+    decisionMakerRole: "",
+    geographicMarket: "",
+    ageRange: [0, 0],
+    gender: "",
+    income: "",
+    education: "",
+    location: ""
+  })
+  const {updateTargetAudience, brandDiscovery} = useBrandingStore()
 
-const TargetAudienceDetails = ({targetAudience}:Props) => {
-   const {removeTargetAudienceItem} = useBrandingStore()
+  const uid = new ShortUniqueId({length: 10});
 
-    const removeTargetAudience = (ind: string) => {
-      removeTargetAudienceItem(ind)
-    }
+  const addTargetAudience = () => {
+    updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID()})
+    setBusinessType(TargetAudienceType.BUSINESS)
+    setTargetAudience({
+      uniqueId: "",
+      targetAudienceType: TargetAudienceType.BUSINESS,
+      companySize: "",
+      industry: "",
+      annualRevenue: "",
+      decisionMakerRole: "",
+      geographicMarket: "",
+      ageRange: [0, 0],
+      gender: "",
+      income: "",
+      education: "",
+      location: ""
+    })
+  }
 
-    return (
-        <CardContent className="border-2 mx-2 py-4 mb-2 rounded-lg">
-             <div className="mb-5">
-              <span className="flex justify-between items-center">
+  return (
+    <>  
+        {brandDiscovery.targetAudience.length >= 1 && brandDiscovery.targetAudience.map((audience) => (
+          <TargetAudienceDetails targetAudience={audience}  key={audience.uniqueId}/>
+        ))}
+
+        <CardContent className="space-y-4 ">
+            <div className="mb-5">
               <Label htmlFor="targetAudienceType" className="mb-4 block">Is your target audience an individual consumer or a business?</Label>
-              <Button onClick={() => removeTargetAudience(targetAudience.uniqueId)} size="icon" variant="outline"><XIcon color="red"/></Button>
-              </span>
-              <RadioGroup defaultValue={targetAudience.targetAudienceType} >
+              <RadioGroup defaultValue={TargetAudienceType.BUSINESS} onValueChange={(v) => {setBusinessType(v); setTargetAudience({...targetAudience, targetAudienceType: v as TargetAudienceType})}}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem value={TargetAudienceType.INDIVIDUAL_CONSUMER} disabled/>
+                    <RadioGroupItem value={TargetAudienceType.INDIVIDUAL_CONSUMER} />
                     <Label htmlFor=''>Individual Consumer (B2C)</Label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem value={TargetAudienceType.BUSINESS} disabled />
+                    <RadioGroupItem value={TargetAudienceType.BUSINESS} />
                     <Label htmlFor=''> Business (B2B)</Label>
                   </div>
                 </div>
               </RadioGroup>
             </div>
 
-            <div className="mb-3">
+            <div>
               <Label className="mb-2 block">Age Range</Label>
               <div className="flex items-center gap-4">
                 <span className="text-sm">{targetAudience.ageRange[0]}</span>
@@ -50,21 +82,19 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   min={18} 
                   max={65} 
                   step={1} 
-                  disabled
-                //   onValueChange={(value) => setTargetAudience({...targetAudience, ageRange:[value[0], value[1]]})}
+                  onValueChange={(value) => setTargetAudience({...targetAudience, ageRange:[value[0], value[1]]})}
                   className="flex-1"
                 />
                 <span className="text-sm">{targetAudience.ageRange[1]}</span>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 mb-3">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="gender" className="mb-2 block">Gender Distribution</Label>
                 <Select 
                   value={targetAudience.gender}
-                  disabled
-                //   onValueChange={(value) => setTargetAudience({...targetAudience, gender: value})}
+                  onValueChange={(value) => setTargetAudience({...targetAudience, gender: value})}
                 >
                   <SelectTrigger id="gender">
                     <SelectValue placeholder="Select gender distribution" />
@@ -79,12 +109,11 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                 </Select>
               </div>
               
-              <div className="mb-3">
+              <div>
                 <Label htmlFor="income" className="mb-2 block">Income Level</Label>
                 <Select 
                   value={targetAudience.income}
-                  disabled
-                //   onValueChange={(value) => setTargetAudience({...targetAudience, income: value})}
+                  onValueChange={(value) => setTargetAudience({...targetAudience, income: value})}
                 >
                   <SelectTrigger id="income">
                     <SelectValue placeholder="Select income level" />
@@ -100,13 +129,12 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 mb-3">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="education" className="mb-2 block">Education Level</Label>
                 <Select 
                   value={targetAudience.education}
-                  disabled
-                //   onValueChange={(value) => setTargetAudience({...targetAudience, education: value})}
+                  onValueChange={(value) => setTargetAudience({...targetAudience, education: value})}
                 >
                   <SelectTrigger id="education">
                     <SelectValue placeholder="Select education level" />
@@ -127,20 +155,19 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                 <Input 
                   id="location" 
                   placeholder="Urban, Rural, Global, Region names..."
-                  defaultValue={targetAudience.location}
-                //   onChange={(e) => setTargetAudience({...targetAudience, location: e.target.value})}
+                  value={targetAudience.location}
+                  onChange={(e) => setTargetAudience({...targetAudience, location: e.target.value})}
                 />
               </div>
             </div>
-            
-            {targetAudience.targetAudienceType == TargetAudienceType.INDIVIDUAL_CONSUMER &&
+            {businessType != undefined && businessType == TargetAudienceType.INDIVIDUAL_CONSUMER &&
              <div className="">
               <div className="grid grid-cols-2 gap-4 mb-3">
                 <div className="">
                   <Label htmlFor="Company Size" className="mb-2 block">Company Size</Label>
                   <Select 
                     value={targetAudience.companySize}
-                    // onValueChange={(value) => setTargetAudience({...targetAudience, companySize: value})}
+                    onValueChange={(value) => setTargetAudience({...targetAudience, companySize: value})}
                   >
                     <SelectTrigger id="companySize">
                       <SelectValue placeholder="Company Size" />
@@ -157,7 +184,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Industry/Sector" className="mb-2 block">Industry/Sector</Label>
                   <Select 
                     value={targetAudience.industry}
-                    // onValueChange={(value) => setTargetAudience({...targetAudience,industry: value })}
+                    onValueChange={(value) => setTargetAudience({...targetAudience,industry: value })}
                   >
                     <SelectTrigger id="Industry/Sector">
                       <SelectValue placeholder="Industry/Sector" />
@@ -181,7 +208,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Annual Revenue Range" className="mb-2 block">Annual Revenue Range</Label>
                   <Select 
                     value={targetAudience.annualRevenue}
-                    // onValueChange={(value) => setTargetAudience({...targetAudience, annualRevenue: value})}
+                    onValueChange={(value) => setTargetAudience({...targetAudience, annualRevenue: value})}
                   >
                     <SelectTrigger id="AnnualRevenueRange">
                       <SelectValue placeholder="Annual Revenue Range" />
@@ -199,7 +226,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Decision Maker Role/Level" className="mb-2 block">Decision Maker Role/Level</Label>
                   <Select 
                     value={targetAudience.decisionMakerRole}
-                    // onValueChange={(value) => setTargetAudience({...targetAudience, decisionMakerRole: value})}
+                    onValueChange={(value) => setTargetAudience({...targetAudience, decisionMakerRole: value})}
                   >
                     <SelectTrigger id="DecisionMakerRole/Level">
                       <SelectValue placeholder="Decision Maker Role/Level" />
@@ -219,7 +246,7 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
                   <Label htmlFor="Geographic Market" className="mb-2 block">Geographic Market</Label>
                   <Select 
                     value={targetAudience.geographicMarket}
-                    // onValueChange={(value) => setTargetAudience({...targetAudience,geographicMarket: value})}
+                    onValueChange={(value) => setTargetAudience({...targetAudience,geographicMarket: value})}
                   >
                     <SelectTrigger id="GeographicMarket">
                       <SelectValue placeholder="Geographic Market" />
@@ -236,8 +263,13 @@ const TargetAudienceDetails = ({targetAudience}:Props) => {
               </div>
              </div>
             }
-        </CardContent>
-    )
+
+          </CardContent>
+          <div className='pl-6'>
+            <Button onClick={() => addTargetAudience()}>Add</Button>
+          </div>
+      </>
+  )
 }
 
-export default TargetAudienceDetails
+export default TargerAudienceForm
