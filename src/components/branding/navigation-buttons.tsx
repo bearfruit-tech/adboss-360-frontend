@@ -1,6 +1,7 @@
 "use client";
 
-import useBrandingStore, { BrandingStep } from "@/stores/use-branding-store";
+import useBrandingStore from "@/stores/use-branding-store";
+import { BrandingStep } from "@/types/branding/branding-step.enum"
 import useProjectStore from "@/stores/use-project-store";
 import { APIRoutes } from "@/constants/api_routes";
 import { authorizedApiRequest } from "@/api";
