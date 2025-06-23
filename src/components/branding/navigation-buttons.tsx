@@ -3,7 +3,7 @@
 import useBrandingStore from "@/stores/use-branding-store";
 import useProjectStore from "@/stores/use-project-store";
 import { APIRoutes } from "@/constants/api_routes";
-import { authorizedApiRequest } from "@/api";
+import { apiRequest, authorizedApiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -64,11 +64,11 @@ export default function NavigationButtons({ hasBrand }: Props) {
 
   // Add type for the click handler
   const handleSaveClick = async (): Promise<void> => {
-    const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/branding`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL_LOCAL}${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/branding`;
     try {
       setloading(true)
       if (!hasBrand) {
-        const branding = await authorizedApiRequest(HttpMethods.POST, url, {
+        const branding = await apiRequest(HttpMethods.POST, url, {
           projectId: currentProject.id,
           brandingStep: getBrandingStep(),
           metadata: {
@@ -87,7 +87,7 @@ export default function NavigationButtons({ hasBrand }: Props) {
         console.log(branding.data);
         setloading(false);
       } else {
-        const branding = await authorizedApiRequest(HttpMethods.PUT, url, {
+        const branding = await apiRequest(HttpMethods.PUT, url, {
           projectId: currentProject.id,
           brandingStep: getBrandingStep(),
           metadata: {

@@ -40,6 +40,7 @@ export default function BrandingModule() {
     setSelectedFont,
     updateImagerySet,
     updateVoiceSet,
+    updateTargetAudienceValues
   } = useBrandingStore();
 
   const currentProject = useProjectStore(
@@ -96,48 +97,27 @@ export default function BrandingModule() {
           // update active step 
           updateActiveStepFromSavedStep(brandingSavedStep)
         }
-        /*
-        // updating target audience age range
-        if (
-          brandingData.brandDiscovery?.targetAudience[0] &&
-          brandingData.brandDiscovery?.targetAudience[0].ageRange &&
-          brandingData.brandDiscovery.targetAudience[0].ageRange.length > 0
-        ) {
+
+        // updating businessName
+        if(brandingData.brandDiscovery?.businessName && brandingData.brandDiscovery.businessName != ""){
           updateBrandDiscovery(
-            "targetAudience.ageRange",
-            brandingData.brandDiscovery.targetAudience.ageRange
-          );
-        }
-        // updating target audience gender
-        if (brandingData.brandDiscovery?.targetAudience?.gender) {
-          updateBrandDiscovery(
-            "targetAudience.gender",
-            brandingData.brandDiscovery.targetAudience.gender
-          );
-        }
-        // updating target audience target income
-        if (brandingData.brandDiscovery?.targetAudience?.income) {
-          updateBrandDiscovery(
-            "targetAudience.income",
-            brandingData.brandDiscovery.targetAudience.income
-          );
-        }
-        // updating target audience target education level
-        if (brandingData.brandDiscovery?.targetAudience?.education) {
-          updateBrandDiscovery(
-            "targetAudience.education",
-            brandingData.brandDiscovery.targetAudience.education
-          );
-        }
-        // updating target audience location
-        if (brandingData.brandDiscovery?.targetAudience?.location) {
-          updateBrandDiscovery(
-            "targetAudience.location",
-            brandingData.brandDiscovery.targetAudience.location
+            "businessName",
+            brandingData.brandDiscovery.businessName
           );
         }
 
-        */
+        // updating businessDescription
+        if(brandingData.brandDiscovery?.businessDescription && brandingData.brandDiscovery.businessDescription != ""){
+          updateBrandDiscovery(
+            "businessDescription",
+            brandingData.brandDiscovery.businessDescription
+          );
+        }
+
+        // updating target audiance
+        if(brandingData.brandDiscovery?.targetAudience != undefined && brandingData.brandDiscovery.targetAudience.length > 0 ){
+          updateTargetAudienceValues(brandingData.brandDiscovery.targetAudience)
+        }
         // udpdating industry
         if (brandingData.brandDiscovery?.industry) {
           updateBrandDiscovery(
