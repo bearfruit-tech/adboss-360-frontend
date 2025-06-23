@@ -31,10 +31,8 @@ export async function promptClaude<T = any>(
       maxTokens = 4000
     } = options || {};
 
-    // Build the comprehensive prompt with brand context
     const fullPrompt = buildPrompt(userPrompt, responseFormat, brandDiscovery);
 
-    // Make the API call
     const response = await client.messages.create({
       model,
       max_tokens: maxTokens,
@@ -46,7 +44,6 @@ export async function promptClaude<T = any>(
       ]
     });
 
-    // Extract and parse the response
     const rawResponse = extractTextFromResponse(response);
     const parsedData = parseStructuredResponse<T>(rawResponse, responseFormat);
 
@@ -65,9 +62,6 @@ export async function promptClaude<T = any>(
   }
 }
 
-/**
- * Build a comprehensive prompt with brand context and format instructions
- */
 function buildPrompt(
   userPrompt: string,
   responseFormat: string,
@@ -97,9 +91,6 @@ Please provide your response in the exact format specified above.
   `;
 }
 
-/**
- * Extract text content from Claude's response
- */
 function extractTextFromResponse(response: any): string {
   if (response.content && Array.isArray(response.content)) {
     const textContent = response.content.find((item: any) => item.type === 'text');
@@ -108,17 +99,11 @@ function extractTextFromResponse(response: any): string {
   return '';
 }
 
-/**
- * Parse structured response (JSON or other formats)
- */
 function parseStructuredResponse<T>(rawResponse: string, expectedFormat: string): T {
-  // Clean the response text
   const cleanedResponse = rawResponse.trim();
 
-  // Check if expecting JSON format
   if (expectedFormat.toLowerCase().includes('json')) {
     try {
-      // Try to extract JSON from the response
       const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
       const jsonString = jsonMatch ? jsonMatch[0] : cleanedResponse;
       return JSON.parse(jsonString) as T;
@@ -127,7 +112,6 @@ function parseStructuredResponse<T>(rawResponse: string, expectedFormat: string)
     }
   }
 
-  // For non-JSON formats, return the raw response
   return cleanedResponse as unknown as T;
 }
 
