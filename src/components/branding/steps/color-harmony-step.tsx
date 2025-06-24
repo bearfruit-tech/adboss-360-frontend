@@ -36,18 +36,20 @@ export default function ColorHarmonyStep() {
   const placeHolderPallete = ["#82D173", "#ADB6C4", "#474973", "#111D13", "#EE964B"]
 
   const lockColor = (index: number, color: string) => {
-    console.log("hots")
-    setLockedInColors([...lockedInColors, {index, pallette: color}])
+    console.log("locking", {index, color})
+    if(!lockedInColors.includes({index, pallette: color})){
+      setLockedInColors([...lockedInColors, {index, pallette: color}])
+    }
   }
 
-  const unlockColor = (color: string) => {
-    console.log("hits")
-    const updatedColors = lockedInColors.filter(pall => pall.pallette != color)
+  const unlockColor = (index: number,color: string) => {
+    console.log("unlocking", {index,color})
+    const updatedColors = lockedInColors.filter(pall => pall.pallette != color && pall.index != index)
     setLockedInColors([...updatedColors])
   }
 
   const isPalleteLocked = (color: string, index: number): boolean => {
-    return lockedInColors.filter(pallete => pallete.pallette == color).length > 0 ? true: false
+    return lockedInColors.filter(pallete => pallete.pallette == color && pallete.index == index).length > 0 ? true: false
     // return lockedInColors.includes({pallette: color, index: index})
   }
 
@@ -73,7 +75,6 @@ export default function ColorHarmonyStep() {
         console.log("result:", result.data?.colors);
         if(result.data?.colors){
           setClaudePallete(result.data.colors)
-          fetchPalettes();
         }
         // console.log("descrip:", result.data?.description);
       }
@@ -109,10 +110,15 @@ export default function ColorHarmonyStep() {
       console.log("updated pallete", newPallete)
       const response = await apiRequest(HttpMethods.POST, "https://api.huemint.com/color", {
         mode:"transformer", // transformer, diffusion or random
-            num_colors:4, // max 12, min 2
+            num_colors:5, // max 12, min 2
             temperature:"1.2", // max 2.4, min 0
             num_results:50, // max 50 for transformer, 5 for diffusion
-            adjacency:[ "0", "65", "45", "35", "65", "0", "35", "65", "45", "35", "0", "35", "35", "65", "35", "0"], // nxn adjacency matrix as a flat array of strings
+            adjacency:[ 
+              "0",  "65", "45", "35", "60",
+              "65", "0",  "35", "65", "50",
+              "45", "35", "0",  "35", "55",
+              "35", "65", "35", "0",  "40",
+              "60", "50", "55", "40", "0"], // nxn adjacency matrix as a flat array of strings
             // palette:["-", "-", "-", "-"]
             palette: newPallete
       });
@@ -159,7 +165,7 @@ export default function ColorHarmonyStep() {
             <h2 className="text-lg font-medium text-gray-900">Color Palettes</h2>
             <Button 
               onClick={fetchPalettes} 
-              disabled={huemintPalleteLoading}
+              disabled={huemintPalleteLoading || huemintPalleteLoading}
               variant="outline"
             >
               {huemintPalleteLoading ? "Loading..." : "Regenerate Palettes"}
@@ -177,7 +183,7 @@ export default function ColorHarmonyStep() {
                   <div className="">
                     {!isPalleteLocked(pallete, i) ?
                     <Button className="cursor-pointer" variant="link" onClick={() => lockColor(i, pallete)}><UnlockKeyholeIcon /></Button>
-                    : <Button className="cursor-pointer" variant="link" onClick={() => unlockColor(pallete)}><LockKeyholeIcon /></Button>}
+                    : <Button className="cursor-pointer" variant="link" onClick={() => unlockColor(i,pallete)}><LockKeyholeIcon /></Button>}
                   </div>
                   <p className="text-xl">{pallete}</p>
                 </div>
