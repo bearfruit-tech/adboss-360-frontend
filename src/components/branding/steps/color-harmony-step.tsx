@@ -7,28 +7,114 @@ import { toast } from "sonner";
 import useBrandingStore from "@/stores/use-branding-store";
 import { apiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
+import { promptClaude } from "@/lib/claude";
+import { ColorPaletteClaudeResponse } from "@/types/branding/color-palette-claude-response";
+import { LockKeyholeIcon, Palette, UnlockKeyholeIcon } from "lucide-react";
+import { string } from "zod";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ColorPalette {
   palette: string[];
   score: number;
 }
 
+interface LockedInColor {
+  pallette: string,
+  index: number
+}
+
 export default function ColorHarmonyStep() {
-  const { setSelectedColors } = useBrandingStore();
+  const { setSelectedColors, brandDiscovery } = useBrandingStore();
   const [palettes, setPalettes] = useState<ColorPalette[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedPalette, setSelectedPalette] = useState<ColorPalette | null>(null);
 
-  const fetchPalettes = async () => {
+  const [lockedInColors, setLockedInColors] = useState<LockedInColor[]>([])
+  const [claudePallete, setClaudePallete] = useState<string[]>([])
+  const [huemintPalleteLoading, sethuemintPalleteLoading] = useState<boolean>(false)
+
+  const placeHolderPallete = ["#82D173", "#ADB6C4", "#474973", "#111D13", "#EE964B"]
+
+  const lockColor = (index: number, color: string) => {
+    console.log("hots")
+    setLockedInColors([...lockedInColors, {index, pallette: color}])
+  }
+
+  const unlockColor = (color: string) => {
+    console.log("hits")
+    const updatedColors = lockedInColors.filter(pall => pall.pallette != color)
+    setLockedInColors([...updatedColors])
+  }
+
+  const isPalleteLocked = (color: string, index: number): boolean => {
+    return lockedInColors.filter(pallete => pallete.pallette == color).length > 0 ? true: false
+    // return lockedInColors.includes({pallette: color, index: index})
+  }
+
+  useEffect(() => {
+    generateClaudeColorPallete();
+  }, [])
+
+  const generateClaudeColorPallete = async () => {
     try {
       setLoading(true);
+      const result = await promptClaude<ColorPaletteClaudeResponse>(
+        "Generate a brand color palette of 5 colors that would work well for this company",
+        `
+        Return a JSON object with this exact structure:
+        {
+          "colors": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5"],
+          "description": "A detailed explanation of why this palette was recommended for the brand"
+        }
+        `,
+        brandDiscovery
+      );
+      if (result.success) {
+        console.log("result:", result.data?.colors);
+        if(result.data?.colors){
+          setClaudePallete(result.data.colors)
+          fetchPalettes();
+        }
+        // console.log("descrip:", result.data?.description);
+      }
+    } catch (error) {
+      toast.error("Failed to load color pallete from claude!");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPalettes = async () => {
+    try {
+      sethuemintPalleteLoading(true);
+      const newPallete: string[] = ["-", "-", "-", "-", "-"];
+      for (let i = 0; i < lockedInColors.length; i++) {
+        if (lockedInColors[i].index == 0) {
+          newPallete[0] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 1) {
+          newPallete[1] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 2) {
+          newPallete[2] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 3) {
+          newPallete[3] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 4) {
+          newPallete[4] = lockedInColors[i].pallette;
+        }
+      }
+      console.log("updated pallete", newPallete)
       const response = await apiRequest(HttpMethods.POST, "https://api.huemint.com/color", {
         mode:"transformer", // transformer, diffusion or random
             num_colors:4, // max 12, min 2
             temperature:"1.2", // max 2.4, min 0
             num_results:50, // max 50 for transformer, 5 for diffusion
             adjacency:[ "0", "65", "45", "35", "65", "0", "35", "65", "45", "35", "0", "35", "35", "65", "35", "0"], // nxn adjacency matrix as a flat array of strings
-            palette:["-", "-", "-", "-"]
+            // palette:["-", "-", "-", "-"]
+            palette: newPallete
       });
       /*const response = await fetch("https://api.huemint.com/color", {
         method: 'POST',
@@ -41,7 +127,9 @@ export default function ColorHarmonyStep() {
             palette:["#ffffff", "-", "-", "-"] // locked colors as hex codes, or '-' if blank
             })
       });*/
-      console.log({response})
+      // console.log({response})
+      console.log("response:", response.results[0].palette)
+      setClaudePallete(response.results[0].palette)
       //const data: ColorHarmonyResponse = await response.json();
       setPalettes(response.results);
       setSelectedPalette(null);
@@ -49,13 +137,9 @@ export default function ColorHarmonyStep() {
       toast.error("Failed to fetch color palettes");
       console.error("Error fetching palettes:", error);
     } finally {
-      setLoading(false);
+      sethuemintPalleteLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchPalettes();
-  }, []);
 
   const handlePaletteSelect = (palette: ColorPalette) => {
     setSelectedPalette(palette);
@@ -75,16 +159,40 @@ export default function ColorHarmonyStep() {
             <h2 className="text-lg font-medium text-gray-900">Color Palettes</h2>
             <Button 
               onClick={fetchPalettes} 
-              disabled={loading}
+              disabled={huemintPalleteLoading}
               variant="outline"
             >
-              {loading ? "Loading..." : "Regenerate Palettes"}
+              {huemintPalleteLoading ? "Loading..." : "Regenerate Palettes"}
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-1">Choose a color palette that best represents your brand&apos;s visual identity.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-5 mb-5">
+          {!loading && (
+            <>
+            {claudePallete.map((pallete, i) => (
+              <div className="h-96 flex flex-col justify-end items-center pb-20 rounded-sm" style={{backgroundColor: pallete}} key={i}>
+                <div className="flex flex-col items-center">
+                  <div className="">
+                    {!isPalleteLocked(pallete, i) ?
+                    <Button className="cursor-pointer" variant="link" onClick={() => lockColor(i, pallete)}><UnlockKeyholeIcon /></Button>
+                    : <Button className="cursor-pointer" variant="link" onClick={() => unlockColor(pallete)}><LockKeyholeIcon /></Button>}
+                  </div>
+                  <p className="text-xl">{pallete}</p>
+                </div>
+              </div>
+            ))}
+            </>
+          )}
+
+          {loading &&  [1,2,3,4,5].map(arr => (
+            <Skeleton className="h-96 w-full border-2" key={arr}/>
+          ))}
+        </div>
+
+
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {palettes.map((palette, index) => (
             <Card
               key={index}
@@ -107,7 +215,7 @@ export default function ColorHarmonyStep() {
               </div>
             </Card>
           ))}
-        </div>
+        </div> */}
 
         {selectedPalette && (
           <div className="mt-6 p-4 border rounded-lg">
