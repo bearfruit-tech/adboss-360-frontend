@@ -2,21 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import useBrandingStore from "@/stores/use-branding-store";
 import { apiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
 import { promptClaude } from "@/lib/claude";
 import { ColorPaletteClaudeResponse } from "@/types/branding/color-palette-claude-response";
-import { LockKeyholeIcon, Palette, UnlockKeyholeIcon } from "lucide-react";
-import { string } from "zod";
+import { LockKeyholeIcon, UnlockKeyholeIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface ColorPalette {
-  palette: string[];
-  score: number;
-}
+// interface ColorPalette {
+//   palette: string[];
+//   score: number;
+// }
 
 interface LockedInColor {
   pallette: string,
@@ -24,16 +22,14 @@ interface LockedInColor {
 }
 
 export default function ColorHarmonyStep() {
-  const { setSelectedColors, brandDiscovery } = useBrandingStore();
-  const [palettes, setPalettes] = useState<ColorPalette[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedPalette, setSelectedPalette] = useState<ColorPalette | null>(null);
+  // const [selectedPalette, setSelectedPalette] = useState<ColorPalette | null>(null);
 
   const [lockedInColors, setLockedInColors] = useState<LockedInColor[]>([])
   const [claudePallete, setClaudePallete] = useState<string[]>([])
   const [huemintPalleteLoading, sethuemintPalleteLoading] = useState<boolean>(false)
-
-  const placeHolderPallete = ["#82D173", "#ADB6C4", "#474973", "#111D13", "#EE964B"]
+  const [previousPalletes, setPreviousPalletes] = useState<string[][]>([])
+  const { brandDiscovery } = useBrandingStore();
 
   const lockColor = (index: number, color: string) => {
     console.log("locking", {index, color})
@@ -50,7 +46,14 @@ export default function ColorHarmonyStep() {
 
   const isPalleteLocked = (color: string, index: number): boolean => {
     return lockedInColors.filter(pallete => pallete.pallette == color && pallete.index == index).length > 0 ? true: false
-    // return lockedInColors.includes({pallette: color, index: index})
+  }
+
+  const goToPreviousPalette = () => {
+    if(previousPalletes.length > 0){
+      const updated = previousPalletes.slice(0, previousPalletes.length-1)
+      setPreviousPalletes([...updated])
+      setClaudePallete(previousPalletes[previousPalletes.length-1])
+    }
   }
 
   useEffect(() => {
@@ -134,11 +137,12 @@ export default function ColorHarmonyStep() {
             })
       });*/
       // console.log({response})
-      console.log("response:", response.results[0].palette)
+      // console.log("response:", response.results[0].palette)
+      setPreviousPalletes([...previousPalletes, claudePallete])
       setClaudePallete(response.results[0].palette)
       //const data: ColorHarmonyResponse = await response.json();
-      setPalettes(response.results);
-      setSelectedPalette(null);
+
+      // setSelectedPalette(null);
     } catch (error) {
       toast.error("Failed to fetch color palettes");
       console.error("Error fetching palettes:", error);
@@ -147,10 +151,6 @@ export default function ColorHarmonyStep() {
     }
   };
 
-  const handlePaletteSelect = (palette: ColorPalette) => {
-    setSelectedPalette(palette);
-    setSelectedColors(palette.palette);
-  };
 
   return (
     <>
@@ -223,7 +223,7 @@ export default function ColorHarmonyStep() {
           ))}
         </div> */}
 
-        {selectedPalette && (
+        {/* {selectedPalette && (
           <div className="mt-6 p-4 border rounded-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-2">Selected Palette</h3>
             <div className="flex gap-4">
@@ -238,7 +238,11 @@ export default function ColorHarmonyStep() {
               ))}
             </div>
           </div>
-        )}
+        )} */}
+
+        <div className="">
+          <Button disabled={previousPalletes.length == 0} variant="outline" onClick={goToPreviousPalette}>Previous Palette</Button>
+        </div>
 
         <div className="mt-6 text-sm text-gray-600">
           <p>Your selected color palette will be used throughout your brand identity to maintain consistency and visual harmony.</p>
