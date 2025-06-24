@@ -11,11 +11,6 @@ import { ColorPaletteClaudeResponse } from "@/types/branding/color-palette-claud
 import { LockKeyholeIcon, UnlockKeyholeIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// interface ColorPalette {
-//   palette: string[];
-//   score: number;
-// }
-
 interface LockedInColor {
   pallette: string,
   index: number
@@ -23,13 +18,10 @@ interface LockedInColor {
 
 export default function ColorHarmonyStep() {
   const [loading, setLoading] = useState(false);
-  // const [selectedPalette, setSelectedPalette] = useState<ColorPalette | null>(null);
-
   const [lockedInColors, setLockedInColors] = useState<LockedInColor[]>([])
-  const [claudePallete, setClaudePallete] = useState<string[]>([])
   const [huemintPalleteLoading, sethuemintPalleteLoading] = useState<boolean>(false)
   const [previousPalletes, setPreviousPalletes] = useState<string[][]>([])
-  const { brandDiscovery } = useBrandingStore();
+  const { brandDiscovery, setSelectedColors, selectedColors } = useBrandingStore();
 
   const lockColor = (index: number, color: string) => {
     console.log("locking", {index, color})
@@ -52,7 +44,7 @@ export default function ColorHarmonyStep() {
     if(previousPalletes.length > 0){
       const updated = previousPalletes.slice(0, previousPalletes.length-1)
       setPreviousPalletes([...updated])
-      setClaudePallete(previousPalletes[previousPalletes.length-1])
+      setSelectedColors(previousPalletes[previousPalletes.length-1])
     }
   }
 
@@ -77,7 +69,7 @@ export default function ColorHarmonyStep() {
       if (result.success) {
         console.log("result:", result.data?.colors);
         if(result.data?.colors){
-          setClaudePallete(result.data.colors)
+          setSelectedColors(result.data.colors)
         }
         // console.log("descrip:", result.data?.description);
       }
@@ -138,11 +130,9 @@ export default function ColorHarmonyStep() {
       });*/
       // console.log({response})
       // console.log("response:", response.results[0].palette)
-      setPreviousPalletes([...previousPalletes, claudePallete])
-      setClaudePallete(response.results[0].palette)
+      setPreviousPalletes([...previousPalletes, selectedColors])
+      setSelectedColors(response.results[0].palette)
       //const data: ColorHarmonyResponse = await response.json();
-
-      // setSelectedPalette(null);
     } catch (error) {
       toast.error("Failed to fetch color palettes");
       console.error("Error fetching palettes:", error);
@@ -177,7 +167,7 @@ export default function ColorHarmonyStep() {
         <div className="grid grid-cols-5 mb-5">
           {!loading && (
             <>
-            {claudePallete.map((pallete, i) => (
+            {selectedColors.map((pallete, i) => (
               <div className="h-96 flex flex-col justify-end items-center pb-20 rounded-sm" style={{backgroundColor: pallete}} key={i}>
                 <div className="flex flex-col items-center">
                   <div className="">
@@ -196,49 +186,6 @@ export default function ColorHarmonyStep() {
             <Skeleton className="h-96 w-full border-2" key={arr}/>
           ))}
         </div>
-
-
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {palettes.map((palette, index) => (
-            <Card
-              key={index}
-              className={`p-4 cursor-pointer transition-all ${
-                selectedPalette === palette ? 'ring-2 ring-primary' : ''
-              }`}
-              onClick={() => handlePaletteSelect(palette)}
-            >
-              <div className="flex gap-2 mb-2">
-                {palette.palette.map((color, colorIndex) => (
-                  <div
-                    key={colorIndex}
-                    className="w-12 h-12 rounded-md"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-              <div className="text-sm text-gray-600">
-                Score: {palette.score.toFixed(2)}
-              </div>
-            </Card>
-          ))}
-        </div> */}
-
-        {/* {selectedPalette && (
-          <div className="mt-6 p-4 border rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Selected Palette</h3>
-            <div className="flex gap-4">
-              {selectedPalette.palette.map((color, index) => (
-                <div key={index} className="space-y-2">
-                  <div
-                    className="w-16 h-16 rounded-md"
-                    style={{ backgroundColor: color }}
-                  />
-                  <div className="text-sm text-center text-gray-600">{color}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )} */}
 
         <div className="">
           <Button disabled={previousPalletes.length == 0} variant="outline" onClick={goToPreviousPalette}>Previous Palette</Button>
