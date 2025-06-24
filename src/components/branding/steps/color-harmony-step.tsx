@@ -8,8 +8,10 @@ import { apiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
 import { promptClaude } from "@/lib/claude";
 import { ColorPaletteClaudeResponse } from "@/types/branding/color-palette-claude-response";
-import { LockKeyholeIcon, UnlockKeyholeIcon } from "lucide-react";
+import { LockKeyholeIcon, PenIcon, UnlockKeyholeIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import ColorPicker from 'react-pick-color';
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 interface LockedInColor {
   pallette: string,
@@ -22,16 +24,17 @@ export default function ColorHarmonyStep() {
   const [huemintPalleteLoading, sethuemintPalleteLoading] = useState<boolean>(false)
   const [previousPalletes, setPreviousPalletes] = useState<string[][]>([])
   const { brandDiscovery, setSelectedColors, selectedColors } = useBrandingStore();
+  const [colorPickerOpen, setColorPickerOpen] = useState<boolean>(false)
+  const [color, setColor] = useState("#fff")
+  const [colorPickerIndex, setColorPickerIndex] = useState<number|null>(null)
 
   const lockColor = (index: number, color: string) => {
-    console.log("locking", {index, color})
     if(!lockedInColors.includes({index, pallette: color})){
       setLockedInColors([...lockedInColors, {index, pallette: color}])
     }
   }
 
   const unlockColor = (index: number,color: string) => {
-    console.log("unlocking", {index,color})
     const updatedColors = lockedInColors.filter(pall => pall.pallette != color && pall.index != index)
     setLockedInColors([...updatedColors])
   }
@@ -46,6 +49,19 @@ export default function ColorHarmonyStep() {
       setPreviousPalletes([...updated])
       setSelectedColors(previousPalletes[previousPalletes.length-1])
     }
+  }
+
+  const onCloseColorPicker = (c: any) => {
+    setColor(c.hex)
+    if(color == ""){
+      return
+    }
+    if(colorPickerIndex == null){
+      return
+    }
+    const colors = selectedColors;
+    colors[colorPickerIndex] = color
+    console.log(colors)
   }
 
   useEffect(() => {
@@ -164,12 +180,21 @@ export default function ColorHarmonyStep() {
           <p className="text-sm text-gray-600 mt-1">Choose a color palette that best represents your brand&apos;s visual identity.</p>
         </div>
 
+        {colorPickerOpen &&
+        <Dialog open={colorPickerOpen} onOpenChange={v => setColorPickerOpen(v)}>
+          <DialogTitle>Color Picker</DialogTitle>
+          <DialogContent>
+            <ColorPicker theme={{width: "420px"}} color={color} onChange={c => onCloseColorPicker(c)}/>
+          </DialogContent>
+        </Dialog>
+        }
         <div className="grid grid-cols-5 mb-5">
           {!loading && (
             <>
             {selectedColors.map((pallete, i) => (
               <div className="h-96 flex flex-col justify-end items-center pb-20 rounded-sm" style={{backgroundColor: pallete}} key={i}>
                 <div className="flex flex-col items-center">
+                  {!isPalleteLocked(pallete, i) && <Button onClick={() => {setColorPickerIndex(i);setColorPickerOpen(true)}} variant="link" className="cursor-pointer"><PenIcon /></Button>}
                   <div className="">
                     {!isPalleteLocked(pallete, i) ?
                     <Button className="cursor-pointer" variant="link" onClick={() => lockColor(i, pallete)}><UnlockKeyholeIcon /></Button>
