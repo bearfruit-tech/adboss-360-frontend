@@ -9,7 +9,6 @@ import { HttpMethods } from "@/constants/api_methods";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
-import { BrandingStep } from "@/types/branding/branding-step.enum";
 
 interface Props {
   hasBrand: boolean

@@ -2,33 +2,136 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import useBrandingStore from "@/stores/use-branding-store";
 import { apiRequest } from "@/api";
 import { HttpMethods } from "@/constants/api_methods";
+import { promptClaude } from "@/lib/claude";
+import { ColorPaletteClaudeResponse } from "@/types/branding/color-palette-claude-response";
+import { LockKeyholeIcon, PenIcon, UnlockKeyholeIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import ColorPicker from 'react-pick-color';
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
-interface ColorPalette {
-  palette: string[];
-  score: number;
+interface LockedInColor {
+  pallette: string,
+  index: number
 }
 
 export default function ColorHarmonyStep() {
-  const { setSelectedColors } = useBrandingStore();
-  const [palettes, setPalettes] = useState<ColorPalette[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedPalette, setSelectedPalette] = useState<ColorPalette | null>(null);
+  const [lockedInColors, setLockedInColors] = useState<LockedInColor[]>([])
+  const [huemintPalleteLoading, sethuemintPalleteLoading] = useState<boolean>(false)
+  const [previousPalletes, setPreviousPalletes] = useState<string[][]>([])
+  const { brandDiscovery, setSelectedColors, selectedColors } = useBrandingStore();
+  const [colorPickerOpen, setColorPickerOpen] = useState<boolean>(false)
+  const [color, setColor] = useState("#fff")
+  const [colorPickerIndex, setColorPickerIndex] = useState<number|null>(null)
+
+  const lockColor = (index: number, color: string) => {
+    if(!lockedInColors.some(pall => pall.pallette == color && pall.index == index)){
+      setLockedInColors([...lockedInColors, {index, pallette: color}])
+    }
+  }
+
+  const unlockColor = (index: number,color: string) => {
+    const updatedColors = lockedInColors.filter(pall => pall.pallette != color && pall.index != index)
+    setLockedInColors([...updatedColors])
+  }
+
+  const isPalleteLocked = (color: string, index: number): boolean => {
+    return lockedInColors.filter(pallete => pallete.pallette == color && pallete.index == index).length > 0 ? true: false
+  }
+
+  const goToPreviousPalette = () => {
+    if(previousPalletes.length > 0){
+      const updated = previousPalletes.slice(0, previousPalletes.length-1)
+      setPreviousPalletes([...updated])
+      setSelectedColors(previousPalletes[previousPalletes.length-1])
+    }
+  }
+
+  const onCloseColorPicker = (c: any) => {
+    setColor(c.hex)
+    if(color == ""){
+      return
+    }
+    if(colorPickerIndex == null){
+      return
+    }
+    const colors = selectedColors;
+    colors[colorPickerIndex] = color
+    console.log(colors)
+  }
+
+  useEffect(() => {
+    generateClaudeColorPallete();
+  }, [])
+
+  const generateClaudeColorPallete = async () => {
+    try {
+      setLoading(true);
+      const result = await promptClaude<ColorPaletteClaudeResponse>(
+        "Generate a brand color palette of 5 colors that would work well for this company",
+        `
+        Return a JSON object with this exact structure:
+        {
+          "colors": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5"],
+          "description": "A detailed explanation of why this palette was recommended for the brand"
+        }
+        `,
+        brandDiscovery
+      );
+      if (result.success) {
+        console.log("result:", result.data?.colors);
+        if(result.data?.colors){
+          setSelectedColors(result.data.colors)
+        }
+        // console.log("descrip:", result.data?.description);
+      }
+    } catch (error) {
+      toast.error("Failed to load color pallete from claude!");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchPalettes = async () => {
     try {
-      setLoading(true);
+      sethuemintPalleteLoading(true);
+      const newPallete: string[] = ["-", "-", "-", "-", "-"];
+      for (let i = 0; i < lockedInColors.length; i++) {
+        if (lockedInColors[i].index == 0) {
+          newPallete[0] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 1) {
+          newPallete[1] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 2) {
+          newPallete[2] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 3) {
+          newPallete[3] = lockedInColors[i].pallette;
+        }
+        if (lockedInColors[i].index == 4) {
+          newPallete[4] = lockedInColors[i].pallette;
+        }
+      }
+      console.log("updated pallete", newPallete)
       const response = await apiRequest(HttpMethods.POST, "https://api.huemint.com/color", {
         mode:"transformer", // transformer, diffusion or random
-            num_colors:4, // max 12, min 2
+            num_colors:5, // max 12, min 2
             temperature:"1.2", // max 2.4, min 0
             num_results:50, // max 50 for transformer, 5 for diffusion
-            adjacency:[ "0", "65", "45", "35", "65", "0", "35", "65", "45", "35", "0", "35", "35", "65", "35", "0"], // nxn adjacency matrix as a flat array of strings
-            palette:["-", "-", "-", "-"]
+            adjacency:[ 
+              "0",  "65", "45", "35", "60",
+              "65", "0",  "35", "65", "50",
+              "45", "35", "0",  "35", "55",
+              "35", "65", "35", "0",  "40",
+              "60", "50", "55", "40", "0"], // nxn adjacency matrix as a flat array of strings
+            // palette:["-", "-", "-", "-"]
+            palette: newPallete
       });
       /*const response = await fetch("https://api.huemint.com/color", {
         method: 'POST',
@@ -41,26 +144,19 @@ export default function ColorHarmonyStep() {
             palette:["#ffffff", "-", "-", "-"] // locked colors as hex codes, or '-' if blank
             })
       });*/
-      console.log({response})
+      // console.log({response})
+      // console.log("response:", response.results[0].palette)
+      setPreviousPalletes([...previousPalletes, selectedColors])
+      setSelectedColors(response.results[0].palette)
       //const data: ColorHarmonyResponse = await response.json();
-      setPalettes(response.results);
-      setSelectedPalette(null);
     } catch (error) {
       toast.error("Failed to fetch color palettes");
       console.error("Error fetching palettes:", error);
     } finally {
-      setLoading(false);
+      sethuemintPalleteLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchPalettes();
-  }, []);
-
-  const handlePaletteSelect = (palette: ColorPalette) => {
-    setSelectedPalette(palette);
-    setSelectedColors(palette.palette);
-  };
 
   return (
     <>
@@ -75,56 +171,50 @@ export default function ColorHarmonyStep() {
             <h2 className="text-lg font-medium text-gray-900">Color Palettes</h2>
             <Button 
               onClick={fetchPalettes} 
-              disabled={loading}
+              disabled={loading || huemintPalleteLoading}
               variant="outline"
             >
-              {loading ? "Loading..." : "Regenerate Palettes"}
+              {huemintPalleteLoading ? "Loading..." : "Regenerate Palettes"}
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-1">Choose a color palette that best represents your brand&apos;s visual identity.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {palettes.map((palette, index) => (
-            <Card
-              key={index}
-              className={`p-4 cursor-pointer transition-all ${
-                selectedPalette === palette ? 'ring-2 ring-primary' : ''
-              }`}
-              onClick={() => handlePaletteSelect(palette)}
-            >
-              <div className="flex gap-2 mb-2">
-                {palette.palette.map((color, colorIndex) => (
-                  <div
-                    key={colorIndex}
-                    className="w-12 h-12 rounded-md"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
+        {colorPickerOpen &&
+        <Dialog open={colorPickerOpen} onOpenChange={v => setColorPickerOpen(v)}>
+          <DialogTitle>Color Picker</DialogTitle>
+          <DialogContent>
+            <ColorPicker theme={{width: "420px"}} color={color} onChange={c => onCloseColorPicker(c)}/>
+          </DialogContent>
+        </Dialog>
+        }
+        <div className="grid grid-cols-1 xl:grid-cols-5 mb-5">
+          {!loading && (
+            <>
+            {selectedColors.map((pallete, i) => (
+              <div className="h-96 flex flex-col justify-end items-center pb-20 rounded-sm" style={{backgroundColor: pallete}} key={i}>
+                <div className="flex flex-col items-center">
+                  {!isPalleteLocked(pallete, i) && <Button onClick={() => {setColorPickerIndex(i);setColorPickerOpen(true)}} variant="link" className="cursor-pointer"><PenIcon /></Button>}
+                  <div className="">
+                    {!isPalleteLocked(pallete, i) ?
+                    <Button className="cursor-pointer" variant="link" onClick={() => lockColor(i, pallete)}><UnlockKeyholeIcon /></Button>
+                    : <Button className="cursor-pointer" variant="link" onClick={() => unlockColor(i,pallete)}><LockKeyholeIcon /></Button>}
+                  </div>
+                  <p className="text-xl">{pallete}</p>
+                </div>
               </div>
-              <div className="text-sm text-gray-600">
-                Score: {palette.score.toFixed(2)}
-              </div>
-            </Card>
+            ))}
+            </>
+          )}
+
+          {loading &&  [1,2,3,4,5].map(arr => (
+            <Skeleton className="h-96 w-full border-2" key={arr}/>
           ))}
         </div>
 
-        {selectedPalette && (
-          <div className="mt-6 p-4 border rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Selected Palette</h3>
-            <div className="flex gap-4">
-              {selectedPalette.palette.map((color, index) => (
-                <div key={index} className="space-y-2">
-                  <div
-                    className="w-16 h-16 rounded-md"
-                    style={{ backgroundColor: color }}
-                  />
-                  <div className="text-sm text-center text-gray-600">{color}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="">
+          <Button disabled={previousPalletes.length == 0} variant="outline" onClick={goToPreviousPalette}>Previous Palette</Button>
+        </div>
 
         <div className="mt-6 text-sm text-gray-600">
           <p>Your selected color palette will be used throughout your brand identity to maintain consistency and visual harmony.</p>

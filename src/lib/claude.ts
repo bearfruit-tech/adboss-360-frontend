@@ -5,7 +5,8 @@ import { ClaudeResult } from '@/types/claude-result';
 import { ColorPaletteClaudeResponse } from '@/types/branding/color-palette-claude-response';
 
 const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
+  dangerouslyAllowBrowser:true,
 });
 
 /**
