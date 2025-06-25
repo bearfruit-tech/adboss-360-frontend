@@ -266,7 +266,7 @@ const TargerAudienceForm = () => {
 
           </CardContent>
           <div className='pl-6'>
-            <Button onClick={() => addTargetAudience()}>Add</Button>
+            <Button className="cursor-pointer" variant="secondary" onClick={() => addTargetAudience()}>Add another target audience</Button>
           </div>
       </>
   )
