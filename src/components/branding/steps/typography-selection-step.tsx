@@ -11,44 +11,6 @@ import {
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const FONT_OPTIONS = [
-  {
-    id: "inter",
-    name: "Inter",
-    className: "font-sans",
-    preview: {
-      header: "The quick brown fox jumps over the lazy dog",
-      subtitle: "A modern, clean typeface",
-      content:
-        "Perfect for digital interfaces and modern designs. Inter is known for its excellent readability and versatility.",
-      small: "Small text example",
-    },
-  },
-  {
-    id: "lexend",
-    name: "Lexend",
-    className: "font-serif",
-    preview: {
-      header: "The quick brown fox jumps over the lazy dog",
-      subtitle: "A contemporary, professional typeface",
-      content:
-        "Lexend offers a perfect balance between modern aesthetics and professional appearance. Great for corporate and creative projects.",
-      small: "Small text example",
-    },
-  },
-  {
-    id: "poppins",
-    name: "Poppins",
-    className: "font-mono",
-    preview: {
-      header: "The quick brown fox jumps over the lazy dog",
-      subtitle: "A geometric sans-serif typeface",
-      content:
-        "Poppins brings a geometric touch to your typography. Its clean lines and modern feel make it ideal for contemporary designs.",
-      small: "Small text example",
-    },
-  },
-];
 export default function TypographySelectionStep() {
   const { selectedFont, setSelectedFont, brandDiscovery } = useBrandingStore();
   const [loading, setLoading] = useState<boolean>(false);
