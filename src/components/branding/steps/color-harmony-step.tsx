@@ -29,7 +29,7 @@ export default function ColorHarmonyStep() {
   const [colorPickerIndex, setColorPickerIndex] = useState<number|null>(null)
 
   const lockColor = (index: number, color: string) => {
-    if(!lockedInColors.includes({index, pallette: color})){
+    if(!lockedInColors.some(pall => pall.pallette == color && pall.index == index)){
       setLockedInColors([...lockedInColors, {index, pallette: color}])
     }
   }
@@ -171,7 +171,7 @@ export default function ColorHarmonyStep() {
             <h2 className="text-lg font-medium text-gray-900">Color Palettes</h2>
             <Button 
               onClick={fetchPalettes} 
-              disabled={huemintPalleteLoading || huemintPalleteLoading}
+              disabled={loading || huemintPalleteLoading}
               variant="outline"
             >
               {huemintPalleteLoading ? "Loading..." : "Regenerate Palettes"}
@@ -188,7 +188,7 @@ export default function ColorHarmonyStep() {
           </DialogContent>
         </Dialog>
         }
-        <div className="grid grid-cols-5 mb-5">
+        <div className="grid grid-cols-1 xl:grid-cols-5 mb-5">
           {!loading && (
             <>
             {selectedColors.map((pallete, i) => (
