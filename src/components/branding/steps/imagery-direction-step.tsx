@@ -6,6 +6,10 @@ import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import useBrandingStore from "@/stores/use-branding-store";
+import { ClaudeImageryResponse, ImagerySet } from '@/types/branding/claude-imagery-direction.interface';
+import { toast } from 'sonner';
+import { promptClaude } from '@/lib/claude';
+import { promise } from 'zod';
 
 const IMAGERY_SETS = [
   {
@@ -36,11 +40,22 @@ interface UnsplashImage {
   alt_description: string;
 }
 
-export default function ImageryDirectionStep() {
-  const { selectedImagerySet, setSelectedImagerySet } = useBrandingStore();
-  const [images, setImages] = useState<{ [key: string]: UnsplashImage[] }>({});
-  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+interface ImageryDirection {
+  id: string,
+  keyword: string,
+  description: string,
+  images: UnsplashImage[]
+}
 
+export default function ImageryDirectionStep() {
+  const { selectedImagerySet, setSelectedImagerySet, brandDiscovery } = useBrandingStore();
+  // const [images, setImages] = useState<{ [key: string]: UnsplashImage[] }>({});
+  // const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [loading, setLoading] = useState(false)
+  // const [imageryDirection, setImageryDirection] = useState<ImagerySet[]>([])
+  const [unsplashImages, setUnsplashImages] = useState<ImageryDirection[]>([])
+  
+  /*
   useEffect(() => {
     const fetchImages = async (setId: string, query: string) => {
       setLoading(prev => ({ ...prev, [setId]: true }));
@@ -62,6 +77,67 @@ export default function ImageryDirectionStep() {
       fetchImages(set.id, set.searchQuery);
     });
   }, []);
+  */
+
+    const generateClaudeImageryDirection = async () => {
+    try {
+      setLoading(true);
+      const result = await promptClaude<ClaudeImageryResponse>(
+        "Generate 3 keywords that would yield the most accurate and brand-aligned images for this company, suitable for use in an images API query",
+        `
+        Each imagerySet item should be an object with the following structure:
+
+        {
+          id: The keyword to be used as the ID,
+          keyword: The appropriate keyword,
+          description: A description of the keyword, not exceeding 20 word
+        }
+
+        Return a JSON object with this exact structure:
+        {
+          "imagerySets": [{}, {}, {}],
+        }
+        `,
+        brandDiscovery
+      );
+      if (result.success) {
+        if(result.data?.imagerySets){
+          fetchUsplashImagerySets(result.data.imagerySets)
+        }
+      }
+    } catch (error) {
+      toast.error("Failed to load color pallete from claude!");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUsplashImagerySets = async(keywords: ImagerySet[]) => {
+    try {
+      const result = await Promise.all(keywords.map( async(keyword) => {
+        const response =  await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(keyword.keyword)}&per_page=3&client_id=_pe6n0hWqmd718RzzomvHI9A9HFzbPpzAbXWUS4GkE4`)
+        const data = await response.json()
+        return {
+          id: keyword.id,
+           keyword: keyword.keyword,
+            description: keyword.description, 
+            images: data.results
+          }
+
+      }))
+      setUnsplashImages([...result])
+    } catch (error) {
+      console.log(error)
+    }
+    finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    generateClaudeImageryDirection();
+  }, [])
 
   return (
     <div className="space-y-8">
@@ -71,13 +147,16 @@ export default function ImageryDirectionStep() {
           Select a set of images that best represents your brand&apos;s visual style and messaging.
         </p>
       </div>
+      {Array(3).fill(0).map((_, i) => (
+        <Card key={i} className='h-72'></Card>
+      ))}
 
       <RadioGroup
         value={selectedImagerySet}
         onValueChange={setSelectedImagerySet}
         className="space-y-6"
       >
-        {IMAGERY_SETS.map((set) => (
+        {unsplashImages.map((set) => (
           <Card
             key={set.id}
             className={`p-6 cursor-pointer transition-all ${
@@ -94,14 +173,29 @@ export default function ImageryDirectionStep() {
                     htmlFor={set.id}
                     className="text-lg font-medium cursor-pointer"
                   >
-                    {set.name}
+                    {set.keyword}
                   </Label>
                   <p className="text-sm text-gray-600 mt-1">{set.description}</p>
                 </div>
+
+                 <div className="grid grid-cols-3 gap-4">
+                  {set.images.map((image) => (
+                      <div
+                        key={image.id}
+                        className="aspect-square rounded-lg overflow-hidden border border-gray-200"
+                      >
+                        <img
+                          src={image.urls.regular}
+                          alt={image.alt_description}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
-                  {loading[set.id] ? (
-                    // Loading state
+                {/* <div className="grid grid-cols-3 gap-4">
+                  {loading ? (
+                
                     Array(3).fill(0).map((_, index) => (
                       <div
                         key={index}
@@ -109,7 +203,7 @@ export default function ImageryDirectionStep() {
                       />
                     ))
                   ) : images[set.id] ? (
-                    // Images loaded
+
                     images[set.id].map((image) => (
                       <div
                         key={image.id}
@@ -133,7 +227,8 @@ export default function ImageryDirectionStep() {
                       </div>
                     ))
                   )}
-                </div>
+                </div> */}
+
               </div>
             </div>
           </Card>
