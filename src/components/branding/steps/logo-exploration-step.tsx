@@ -26,12 +26,15 @@ export default function LogoExplorationStep() {
             <div 
               key={index} 
               className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                selectedLogo === index ? 'border-gradient-gold shadow-md' : 'border-transparent hover:border-gray-300'
+                selectedLogo === logo ? 'border-gradient-gold shadow-md' : 'border-transparent hover:border-gray-300'
               }`}
-              onClick={() => setSelectedLogo(index)}
+              onClick={() => setSelectedLogo(logo)}
             >
-              <img src={logo} alt={`Logo option ${index+1}`} className="w-full h-64 object-contain p-4" />
-              {selectedLogo === index && (
+              <div 
+                className="w-full h-64 flex items-center justify-center p-4"
+                dangerouslySetInnerHTML={{ __html: logo }}
+              />
+              {selectedLogo === logo && (
                 <div className="absolute top-2 right-2 h-6 w-6 bg-primary rounded-full flex items-center justify-center text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

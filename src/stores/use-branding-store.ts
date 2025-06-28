@@ -10,7 +10,7 @@ export interface BrandingState {
   activeStep: number;
   brandDiscovery: BrandDiscovery;
   selectedImages: number[];
-  selectedLogo: number | null;
+  selectedLogo: string | null;
   selectedColors: string[];
   selectedFont: string;
   selectedImagerySet: string | null;
@@ -26,7 +26,7 @@ export interface BrandingState {
   toggleValue: (valueId: string) => void;
   toggleProblem: (problemId: string) => void;
   toggleImageSelection: (index: number) => void;
-  setSelectedLogo: (index: number) => void;
+  setSelectedLogo: (svg: string) => void;
   setSelectedColors: (colors: string[]) => void;
   setSelectedFont: (font: string) => void;
   setSelectedImagerySet: (setId: string) => void;
@@ -35,7 +35,7 @@ export interface BrandingState {
   updateValues: (values: string[]) => void;
   updateProblems: (values: string[]) => void;
   updateSelectedImages: (values: number[]) => void;
-  updateSelectedLogo: (value: number) => void;
+  updateSelectedLogo: (svg: string) => void;
   updateImagerySet: (value: string) => void;
   updateVoiceSet: (value: string) => void;
   updateTargetAudience: (values: TargetAudience) => void;
@@ -95,10 +95,10 @@ const useBrandingStore = create<BrandingState>((set) => ({
       selectedImages: [...values],
     })),
 
-  updateSelectedLogo: (value: number) =>
+  updateSelectedLogo: (svg: string) =>
     set((state) => ({
       ...state,
-      selectedLogo: value,
+      selectedLogo: svg,
     })),
 
   updateImagerySet: (value: string) =>
@@ -201,7 +201,7 @@ const useBrandingStore = create<BrandingState>((set) => ({
       return { selectedImages };
     }),
 
-  setSelectedLogo: (index: number) => set({ selectedLogo: index }),
+  setSelectedLogo: (svg: string) => set({ selectedLogo: svg }),
 
   setSelectedColors: (colors: string[]) => set({ selectedColors: colors }),
   setSelectedFont: (font: string) => set({ selectedFont: font }),
