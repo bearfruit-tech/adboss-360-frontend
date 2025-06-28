@@ -37,7 +37,7 @@ export default function ImageryDirectionStep() {
     try {
       setLoading(true);
       const result = await promptClaude<ClaudeImageryResponse>(
-        "Generate 3 keywords that would yield the most accurate and brand-aligned images for this company, suitable for use in an images API query",
+        "Generate 3 keywords that would yield the most accurate and brand-aligned imagery direction for this company, suitable for use in an images API query",
         `
         Each imagerySet item should be an object with the following structure:
 
