@@ -51,24 +51,39 @@ export const moodboardImages: string[] = [
   ];
   
   // Logo options
-  export const logoOptions: string[] = [
-    // Simple circle logo
-    `<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="80" fill="#3B82F6" stroke="#1E40AF" stroke-width="4"/>
-      <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">LOGO</text>
-    </svg>`,
+  export interface LogoOption {
+    name: string;
+    description: string;
+    svg: string;
+  }
+
+  export const logoOptions: LogoOption[] = [
+    {
+      name: "Circular Harmony",
+      description: "A balanced, approachable design that conveys unity and completeness",
+      svg: `<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="80" fill="#3B82F6" stroke="#1E40AF" stroke-width="4"/>
+        <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">LOGO</text>
+      </svg>`
+    },
     
-    // Simple square logo
-    `<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <rect x="20" y="20" width="160" height="160" fill="#10B981" stroke="#059669" stroke-width="4" rx="8"/>
-      <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">BRAND</text>
-    </svg>`,
+    {
+      name: "Structured Foundation", 
+      description: "A solid, professional design that represents stability and reliability",
+      svg: `<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="20" width="160" height="160" fill="#10B981" stroke="#059669" stroke-width="4" rx="8"/>
+        <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">BRAND</text>
+      </svg>`
+    },
     
-    // Simple triangle logo
-    `<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="100,20 180,180 20,180" fill="#F59E0B" stroke="#D97706" stroke-width="4"/>
-      <text x="100" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">MARK</text>
-    </svg>`
+    {
+      name: "Dynamic Direction",
+      description: "An energetic, forward-moving design that suggests growth and progress",
+      svg: `<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="100,20 180,180 20,180" fill="#F59E0B" stroke="#D97706" stroke-width="4"/>
+        <text x="100" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">MARK</text>
+      </svg>`
+    }
   ];
   
   // Steps titles and descriptions
