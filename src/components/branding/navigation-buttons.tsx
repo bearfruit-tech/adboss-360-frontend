@@ -20,6 +20,7 @@ export default function NavigationButtons({ hasBrand }: Props) {
   const {
     brandDiscovery,
     selectedImages,
+    logoOptions,
     selectedLogo,
     selectedColors,
     selectedFont,
@@ -77,6 +78,7 @@ export default function NavigationButtons({ hasBrand }: Props) {
             },
             selectedImages,
             selectedLogo,
+            logoOptions,
             selectedColors,
             selectedFont,
             selectedImagerySet,
@@ -96,6 +98,7 @@ export default function NavigationButtons({ hasBrand }: Props) {
             },
             selectedImages,
             selectedLogo,
+            logoOptions,
             selectedColors,
             selectedFont,
             selectedImagerySet,
