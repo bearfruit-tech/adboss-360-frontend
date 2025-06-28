@@ -7,6 +7,13 @@ import useBrandingStore from "@/stores/use-branding-store";
 import { promptClaude } from "@/lib/claude";
 import { LogoOptionClaudeResponse } from "@/types/branding/logo-options-claude-response";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function LogoExplorationStep() {
   const [loading, setLoading] = useState(false);
@@ -162,6 +169,57 @@ export default function LogoExplorationStep() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                 </button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className="absolute top-2 left-14 h-10 w-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 shadow-sm transition-all duration-200"
+                      title="View logo details"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>{logo.name}</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center space-y-6">
+                      <div className="w-full max-w-md h-96 flex items-center justify-center p-8 bg-gray-50 rounded-lg">
+                        <div 
+                          className="w-full h-full flex items-center justify-center"
+                          dangerouslySetInnerHTML={{ __html: logo.svg }}
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{logo.name}</h3>
+                        <p className="text-gray-600 leading-relaxed">{logo.description}</p>
+                      </div>
+                      <div className="flex space-x-3">
+                        <Button
+                          onClick={() => {
+                            setSelectedLogo(logo.svg);
+                            toast.success(`${logo.name} selected as your logo!`);
+                          }}
+                          variant={selectedLogo === logo.svg ? "default" : "outline"}
+                          className="min-w-[120px]"
+                        >
+                          {selectedLogo === logo.svg ? "Selected" : "Select This Logo"}
+                        </Button>
+                        <Button
+                          onClick={() => downloadLogo(logo.svg, logo.name)}
+                          variant="outline"
+                          className="min-w-[120px]"
+                        >
+                          Download
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <div className="p-4 bg-gray-50">
                   <h3 className="font-semibold text-gray-900 text-sm mb-1">{logo.name}</h3>
                   <p className="text-gray-600 text-xs leading-relaxed">{logo.description}</p>
