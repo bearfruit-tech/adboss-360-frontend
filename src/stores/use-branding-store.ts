@@ -18,6 +18,7 @@ export interface BrandingState {
   brandFeedback: string;
   logoOptions: Array<{ name: string; description: string; svg: string }>;
   hasGeneratedLogos: boolean;
+  customLogoOptions: Array<{ name: string; description: string; svg: string }>;
 
   // Actions
   UpdateBrandingStep: (step: BrandingStep) => void;
@@ -45,6 +46,9 @@ export interface BrandingState {
   removeTargetAudienceItem: (id: string) => void;
   setLogoOptions: (options: Array<{ name: string; description: string; svg: string }>) => void;
   setHasGeneratedLogos: (hasGenerated: boolean) => void;
+  setCustomLogoOptions: (options: Array<{ name: string; description: string; svg: string }>) => void;
+  addCustomLogo: (logo: { name: string; description: string; svg: string }) => void;
+  removeCustomLogo: (index: number) => void;
 }
 
 const useBrandingStore = create<BrandingState>((set) => ({
@@ -79,6 +83,7 @@ const useBrandingStore = create<BrandingState>((set) => ({
   brandFeedback: "",
   logoOptions: [],
   hasGeneratedLogos: false,
+  customLogoOptions: [],
 
   // Actions
   UpdateBrandingStep: (step: BrandingStep) => set({brandingStep: step}),
@@ -237,7 +242,14 @@ const useBrandingStore = create<BrandingState>((set) => ({
   })),
 
   setLogoOptions: (options: Array<{ name: string; description: string; svg: string }>) => set({ logoOptions: options }),
-  setHasGeneratedLogos: (hasGenerated: boolean) => set({ hasGeneratedLogos: hasGenerated })
+  setHasGeneratedLogos: (hasGenerated: boolean) => set({ hasGeneratedLogos: hasGenerated }),
+  setCustomLogoOptions: (options: Array<{ name: string; description: string; svg: string }>) => set({ customLogoOptions: options }),
+  addCustomLogo: (logo: { name: string; description: string; svg: string }) => set((state) => ({
+    customLogoOptions: [...state.customLogoOptions, logo]
+  })),
+  removeCustomLogo: (index: number) => set((state) => ({
+    customLogoOptions: state.customLogoOptions.filter((_, i) => i !== index)
+  })),
 }));
 
 export default useBrandingStore;
