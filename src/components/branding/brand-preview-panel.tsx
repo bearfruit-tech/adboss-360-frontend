@@ -1,7 +1,7 @@
 "use client";
 
 import useBrandingStore from "@/stores/use-branding-store";
-import { valueOptions, logoOptions } from "@/constants/branding_constants";
+import { valueOptions } from "@/constants/branding_constants";
 import TypographyPreview from "./typography-preview";
 import ColorPreview from "./color-preview";
 import ImageryPreview from "./imagery-preview";
@@ -267,10 +267,9 @@ export default function BrandPreviewPanel() {
                 Selected Logo Style
               </h4>
               <div className="rounded-md overflow-hidden border border-gray-200">
-                <img
-                  src={logoOptions[selectedLogo]}
-                  alt="Selected logo style"
-                  className="w-full h-48 object-contain p-4"
+                <div 
+                  className="w-full h-48 flex items-center justify-center p-4"
+                  dangerouslySetInnerHTML={{ __html: selectedLogo }}
                 />
               </div>
             </div>

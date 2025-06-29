@@ -17,7 +17,7 @@ import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
 export interface Brand {
   brandDiscovery?: BrandDiscovery;
   selectedImages?: number[];
-  selectedLogo?: null;
+  selectedLogo?: string | null;
 
   selectedColors?: string[];
 
@@ -40,7 +40,8 @@ export default function BrandingModule() {
     setSelectedFont,
     updateImagerySet,
     updateVoiceSet,
-    updateTargetAudienceValues
+    updateTargetAudienceValues,
+    updateSelectedLogo
   } = useBrandingStore();
 
   const currentProject = useProjectStore(
@@ -208,6 +209,10 @@ export default function BrandingModule() {
           brandingData.selectedImages.length > 0
         ) {
           updateSelectedImages(brandingData.selectedImages);
+        }
+        // updating selected logo
+        if (brandingData.selectedLogo) {
+          updateSelectedLogo(brandingData.selectedLogo);
         }
         // updating selected colors
         if (
