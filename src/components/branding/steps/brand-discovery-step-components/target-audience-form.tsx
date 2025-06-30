@@ -12,10 +12,10 @@ import { Button } from "@/components/ui/button"
 import ShortUniqueId from 'short-unique-id';
 
 const TargerAudienceForm = () => {
-  const [businessType, setBusinessType] = useState<string>()
+  const [business, setBusiness] = useState<`${TargetAudienceType.BUSINESS}`|`${TargetAudienceType.INDIVIDUAL_CONSUMER}`>("BUSINESS")
   const [targetAudience, setTargetAudience] = useState<TargetAudience>({
     uniqueId: "",
-    targetAudienceType: TargetAudienceType.BUSINESS,
+    targetAudienceType: business,
     companySize: "",
     industry: "",
     annualRevenue: "",
@@ -32,11 +32,10 @@ const TargerAudienceForm = () => {
   const uid = new ShortUniqueId({length: 10});
 
   const addTargetAudience = () => {
-    updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID()})
-    setBusinessType(TargetAudienceType.BUSINESS)
+    updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID(), targetAudienceType: business})
     setTargetAudience({
       uniqueId: "",
-      targetAudienceType: TargetAudienceType.BUSINESS,
+      targetAudienceType: business,
       companySize: "",
       industry: "",
       annualRevenue: "",
@@ -48,6 +47,12 @@ const TargerAudienceForm = () => {
       education: "",
       location: ""
     })
+    setBusiness("BUSINESS")
+  }
+
+  const setBusinessTypeValue = (v: string) => {
+    const value  = v == `${TargetAudienceType.BUSINESS}` ? "BUSINESS": "INDIVIDUAL_CONSUMER"
+    setBusiness(value)
   }
 
   return (
@@ -59,14 +64,14 @@ const TargerAudienceForm = () => {
         <CardContent className="space-y-4 ">
             <div className="mb-5">
               <Label htmlFor="targetAudienceType" className="mb-4 block">Is your target audience an individual consumer or a business?</Label>
-              <RadioGroup defaultValue={TargetAudienceType.BUSINESS} onValueChange={(v) => {setBusinessType(v); setTargetAudience({...targetAudience, targetAudienceType: v as TargetAudienceType})}}>
+              <RadioGroup value={business}  onValueChange={(v) => {setBusinessTypeValue(v); setTargetAudience({...targetAudience, targetAudienceType: business})}}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem value={TargetAudienceType.INDIVIDUAL_CONSUMER} />
+                    <RadioGroupItem value={`${TargetAudienceType.INDIVIDUAL_CONSUMER}`} />
                     <Label htmlFor=''>Individual Consumer (B2C)</Label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem value={TargetAudienceType.BUSINESS} />
+                    <RadioGroupItem value={`${TargetAudienceType.BUSINESS}`} />
                     <Label htmlFor=''> Business (B2B)</Label>
                   </div>
                 </div>
@@ -79,6 +84,7 @@ const TargerAudienceForm = () => {
                 <span className="text-sm">{targetAudience.ageRange[0]}</span>
                 <Slider 
                   defaultValue={targetAudience.ageRange} 
+                  value={targetAudience.ageRange}
                   min={18} 
                   max={65} 
                   step={1} 
@@ -160,7 +166,7 @@ const TargerAudienceForm = () => {
                 />
               </div>
             </div>
-            {businessType != undefined && businessType == TargetAudienceType.INDIVIDUAL_CONSUMER &&
+            {business != undefined && business == `${TargetAudienceType.INDIVIDUAL_CONSUMER}` &&
              <div className="">
               <div className="grid grid-cols-2 gap-4 mb-3">
                 <div className="">
