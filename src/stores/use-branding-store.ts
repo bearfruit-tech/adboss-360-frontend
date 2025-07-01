@@ -16,9 +16,9 @@ export interface BrandingState {
   selectedImagerySet: string | null;
   selectedVoiceSet: string | null;
   brandFeedback: string;
-  logoOptions: Array<{ name: string; description: string; svg: string }>;
+  logoOptions: LogoOption[];
   hasGeneratedLogos: boolean;
-  customLogoOptions: Array<{ name: string; description: string; svg: string }>;
+  customLogoOptions: LogoOption[];
 
   // Actions
   UpdateBrandingStep: (step: BrandingStep) => void;
