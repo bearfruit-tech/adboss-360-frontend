@@ -50,13 +50,6 @@ export const moodboardImages: string[] = [
     "https://cdn.dribbble.com/userupload/12008372/file/original-6d1528f1d690ce5ca350a9c69a288ec2.jpg?resize=2048x1536&vertical=center",
   ];
   
-  // Logo options
-  export const logoOptions: string[] = [
-    "https://cdn.dribbble.com/userupload/15907634/file/original-6ee4d4adee16dfb6df8c047645eb4b6f.jpg?resize=2048x1536&vertical=center",
-    "https://cdn.dribbble.com/userupload/29047262/file/original-48df48b9d9418dc134729f131abca39c.jpg?resize=1504x1128&vertical=center",
-    "https://cdn.dribbble.com/userupload/15515752/file/original-53515949b8a0120bb68a872c543c576c.jpg?resize=1504x1128&vertical=center"
-  ];
-  
   // Steps titles and descriptions
   export const brandingSteps: BrandingStep[] = [
     { id: 0, title: "Brand Discovery", completed: false },
