@@ -12,10 +12,10 @@ import { Button } from "@/components/ui/button"
 import ShortUniqueId from 'short-unique-id';
 
 const TargerAudienceForm = () => {
-  const [business, setBusiness] = useState<`${TargetAudienceType.BUSINESS}`|`${TargetAudienceType.INDIVIDUAL_CONSUMER}`>("BUSINESS")
+  const [targetAudienceType, setTargetAudienceType] = useState<`${TargetAudienceType.BUSINESS}`|`${TargetAudienceType.INDIVIDUAL_CONSUMER}`>("BUSINESS")
   const [targetAudience, setTargetAudience] = useState<TargetAudience>({
     uniqueId: "",
-    targetAudienceType: business,
+    targetAudienceType: targetAudienceType,
     companySize: "",
     industry: "",
     annualRevenue: "",
@@ -32,10 +32,10 @@ const TargerAudienceForm = () => {
   const uid = new ShortUniqueId({length: 10});
 
   const addTargetAudience = () => {
-    updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID(), targetAudienceType: business})
+    updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID(), targetAudienceType: targetAudienceType})
     setTargetAudience({
       uniqueId: "",
-      targetAudienceType: business,
+      targetAudienceType: targetAudienceType,
       companySize: "",
       industry: "",
       annualRevenue: "",
@@ -47,12 +47,12 @@ const TargerAudienceForm = () => {
       education: "",
       location: ""
     })
-    setBusiness("BUSINESS")
+    setTargetAudienceType("BUSINESS")
   }
 
   const setBusinessTypeValue = (v: string) => {
     const value  = v == `${TargetAudienceType.BUSINESS}` ? "BUSINESS": "INDIVIDUAL_CONSUMER"
-    setBusiness(value)
+    setTargetAudienceType(value)
   }
 
   return (
@@ -62,9 +62,10 @@ const TargerAudienceForm = () => {
         ))}
 
         <CardContent className="space-y-4 ">
+
             <div className="mb-5">
               <Label htmlFor="targetAudienceType" className="mb-4 block">Is your target audience an individual consumer or a business?</Label>
-              <RadioGroup value={business}  onValueChange={(v) => {setBusinessTypeValue(v); setTargetAudience({...targetAudience, targetAudienceType: business})}}>
+              <RadioGroup value={targetAudienceType}  onValueChange={(v) => {setBusinessTypeValue(v); setTargetAudience({...targetAudience, targetAudienceType: targetAudienceType})}}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value={`${TargetAudienceType.INDIVIDUAL_CONSUMER}`} />
@@ -78,96 +79,102 @@ const TargerAudienceForm = () => {
               </RadioGroup>
             </div>
 
-            <div>
-              <Label className="mb-2 block">Age Range</Label>
-              <div className="flex items-center gap-4">
-                <span className="text-sm">{targetAudience.ageRange[0]}</span>
-                <Slider 
-                  defaultValue={targetAudience.ageRange} 
-                  value={targetAudience.ageRange}
-                  min={18} 
-                  max={65} 
-                  step={1} 
-                  onValueChange={(value) => setTargetAudience({...targetAudience, ageRange:[value[0], value[1]]})}
-                  className="flex-1"
-                />
-                <span className="text-sm">{targetAudience.ageRange[1]}</span>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
+            {/* Individual Consumer */}
+            {targetAudienceType != undefined && targetAudienceType == `${TargetAudienceType.INDIVIDUAL_CONSUMER}` &&
+            <>
               <div>
-                <Label htmlFor="gender" className="mb-2 block">Gender Distribution</Label>
-                <Select 
-                  value={targetAudience.gender}
-                  onValueChange={(value) => setTargetAudience({...targetAudience, gender: value})}
-                >
-                  <SelectTrigger id="gender">
-                    <SelectValue placeholder="Select gender distribution" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="predominantly-male">Predominantly Male</SelectItem>
-                    <SelectItem value="predominantly-female">Predominantly Female</SelectItem>
-                    <SelectItem value="equal-distribution">Equal Distribution</SelectItem>
-                    <SelectItem value="non-binary-focus">Primarily Non-binary</SelectItem>
-                    <SelectItem value="all-inclusive">All Inclusive</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label className="mb-2 block">Age Range</Label>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm">{targetAudience.ageRange[0]}</span>
+                  <Slider 
+                    defaultValue={targetAudience.ageRange} 
+                    value={targetAudience.ageRange}
+                    min={18} 
+                    max={65} 
+                    step={1} 
+                    onValueChange={(value) => setTargetAudience({...targetAudience, ageRange:[value[0], value[1]]})}
+                    className="flex-1"
+                  />
+                  <span className="text-sm">{targetAudience.ageRange[1]}</span>
+                </div>
               </div>
               
-              <div>
-                <Label htmlFor="income" className="mb-2 block">Income Level</Label>
-                <Select 
-                  value={targetAudience.income}
-                  onValueChange={(value) => setTargetAudience({...targetAudience, income: value})}
-                >
-                  <SelectTrigger id="income">
-                    <SelectValue placeholder="Select income level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="budget">Budget-conscious</SelectItem>
-                    <SelectItem value="middle">Middle income</SelectItem>
-                    <SelectItem value="upper-middle">Upper middle income</SelectItem>
-                    <SelectItem value="affluent">Affluent</SelectItem>
-                    <SelectItem value="luxury">Luxury</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="education" className="mb-2 block">Education Level</Label>
-                <Select 
-                  value={targetAudience.education}
-                  onValueChange={(value) => setTargetAudience({...targetAudience, education: value})}
-                >
-                  <SelectTrigger id="education">
-                    <SelectValue placeholder="Select education level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high-school">High School</SelectItem>
-                    <SelectItem value="some-college">Some College</SelectItem>
-                    <SelectItem value="bachelors">Bachelor&apos;s Degree</SelectItem>
-                    <SelectItem value="masters">Master&apos;s Degree</SelectItem>
-                    <SelectItem value="phd">PhD or Doctorate</SelectItem>
-                    <SelectItem value="mixed">Mixed Education Levels</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="gender" className="mb-2 block">Gender Distribution</Label>
+                  <Select 
+                    value={targetAudience.gender}
+                    onValueChange={(value) => setTargetAudience({...targetAudience, gender: value})}
+                  >
+                    <SelectTrigger id="gender">
+                      <SelectValue placeholder="Select gender distribution" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="predominantly-male">Predominantly Male</SelectItem>
+                      <SelectItem value="predominantly-female">Predominantly Female</SelectItem>
+                      <SelectItem value="equal-distribution">Equal Distribution</SelectItem>
+                      <SelectItem value="non-binary-focus">Primarily Non-binary</SelectItem>
+                      <SelectItem value="all-inclusive">All Inclusive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="income" className="mb-2 block">Income Level</Label>
+                  <Select 
+                    value={targetAudience.income}
+                    onValueChange={(value) => setTargetAudience({...targetAudience, income: value})}
+                  >
+                    <SelectTrigger id="income">
+                      <SelectValue placeholder="Select income level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="budget">Budget-conscious</SelectItem>
+                      <SelectItem value="middle">Middle income</SelectItem>
+                      <SelectItem value="upper-middle">Upper middle income</SelectItem>
+                      <SelectItem value="affluent">Affluent</SelectItem>
+                      <SelectItem value="luxury">Luxury</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
-              <div>
-                <Label htmlFor="location" className="mb-2 block">Geographic Location</Label>
-                <Input 
-                  id="location" 
-                  placeholder="Urban, Rural, Global, Region names..."
-                  value={targetAudience.location}
-                  onChange={(e) => setTargetAudience({...targetAudience, location: e.target.value})}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="education" className="mb-2 block">Education Level</Label>
+                  <Select 
+                    value={targetAudience.education}
+                    onValueChange={(value) => setTargetAudience({...targetAudience, education: value})}
+                  >
+                    <SelectTrigger id="education">
+                      <SelectValue placeholder="Select education level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high-school">High School</SelectItem>
+                      <SelectItem value="some-college">Some College</SelectItem>
+                      <SelectItem value="bachelors">Bachelor&apos;s Degree</SelectItem>
+                      <SelectItem value="masters">Master&apos;s Degree</SelectItem>
+                      <SelectItem value="phd">PhD or Doctorate</SelectItem>
+                      <SelectItem value="mixed">Mixed Education Levels</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="location" className="mb-2 block">Geographic Location</Label>
+                  <Input 
+                    id="location" 
+                    placeholder="Urban, Rural, Global, Region names..."
+                    value={targetAudience.location}
+                    onChange={(e) => setTargetAudience({...targetAudience, location: e.target.value})}
+                  />
+                </div>
               </div>
-            </div>
-            {business != undefined && business == `${TargetAudienceType.INDIVIDUAL_CONSUMER}` &&
-             <div className="">
+            </>}
+            
+            {/* Business */}
+            {targetAudienceType != undefined && targetAudienceType == `${TargetAudienceType.BUSINESS}` &&
+             <>
               <div className="grid grid-cols-2 gap-4 mb-3">
                 <div className="">
                   <Label htmlFor="Company Size" className="mb-2 block">Company Size</Label>
@@ -267,7 +274,7 @@ const TargerAudienceForm = () => {
                 </div>
                 <div className=""></div>
               </div>
-             </div>
+             </>
             }
 
           </CardContent>
