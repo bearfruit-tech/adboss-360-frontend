@@ -2,7 +2,29 @@
 import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
 import { BrandingStep } from "@/types/branding/branding-step.enum"
 import { TargetAudience} from "@/types/branding/target-audience.interface";
+import { BrandVoice } from "@/types/branding/brand-voice-claude-response";
 import { create } from "zustand";
+
+interface LogoOption {
+  name: string;
+  description: string;
+  svg: string;
+}
+
+interface UnsplashImage {
+  id: string;
+  urls: {
+    regular: string;
+  };
+  alt_description: string;
+}
+
+interface ImageryDirection {
+  id: string,
+  keyword: string,
+  description: string,
+  images: UnsplashImage[]
+}
 
 export interface BrandingState {
 
@@ -15,10 +37,12 @@ export interface BrandingState {
   selectedFont: string;
   selectedImagerySet: string | null;
   selectedVoiceSet: string | null;
+  brandVoices: BrandVoice[];
   brandFeedback: string;
   logoOptions: LogoOption[];
   hasGeneratedLogos: boolean;
   customLogoOptions: LogoOption[];
+  imagerySampleImages: ImageryDirection[];
 
   // Actions
   UpdateBrandingStep: (step: BrandingStep) => void;
@@ -34,6 +58,7 @@ export interface BrandingState {
   setSelectedFont: (font: string) => void;
   setSelectedImagerySet: (setId: string) => void;
   setSelectedVoiceSet: (setId: string) => void;
+  setBrandVoices: (voices: BrandVoice[]) => void;
   setBrandFeedback: (feedback: string) => void;
   updateValues: (values: string[]) => void;
   updateProblems: (values: string[]) => void;
@@ -49,6 +74,7 @@ export interface BrandingState {
   setCustomLogoOptions: (options: Array<{ name: string; description: string; svg: string }>) => void;
   addCustomLogo: (logo: { name: string; description: string; svg: string }) => void;
   removeCustomLogo: (index: number) => void;
+  setImagerySampleImages: (images: ImageryDirection[]) => void;
 }
 
 const useBrandingStore = create<BrandingState>((set) => ({
@@ -80,10 +106,12 @@ const useBrandingStore = create<BrandingState>((set) => ({
   selectedFont: "inter",
   selectedImagerySet: null,
   selectedVoiceSet: null,
+  brandVoices: [],
   brandFeedback: "",
   logoOptions: [],
   hasGeneratedLogos: false,
   customLogoOptions: [],
+  imagerySampleImages: [],
 
   // Actions
   UpdateBrandingStep: (step: BrandingStep) => set({brandingStep: step}),
@@ -216,8 +244,12 @@ const useBrandingStore = create<BrandingState>((set) => ({
 
   setSelectedColors: (colors: string[]) => set({ selectedColors: colors }),
   setSelectedFont: (font: string) => set({ selectedFont: font }),
-  setSelectedImagerySet: (setId: string) => set({ selectedImagerySet: setId }),
+  setSelectedImagerySet: (setId: string) => {
+    alert(setId)
+    set({ selectedImagerySet: setId })
+  },
   setSelectedVoiceSet: (setId: string) => set({ selectedVoiceSet: setId }),
+  setBrandVoices: (voices: BrandVoice[]) => set({ brandVoices: voices }),
   setBrandFeedback: (feedback: string) => set({ brandFeedback: feedback }),
 
   updateTargetAudience: (value: TargetAudience) => set((state) => ({
@@ -250,6 +282,7 @@ const useBrandingStore = create<BrandingState>((set) => ({
   removeCustomLogo: (index: number) => set((state) => ({
     customLogoOptions: state.customLogoOptions.filter((_, i) => i !== index)
   })),
+  setImagerySampleImages: (images: ImageryDirection[]) => set({ imagerySampleImages: images }),
 }));
 
 export default useBrandingStore;

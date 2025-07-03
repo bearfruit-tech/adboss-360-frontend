@@ -6,13 +6,12 @@ import { Label } from "@/components/ui/label";
 import useBrandingStore from "@/stores/use-branding-store";
 import { useEffect, useState } from "react";
 import { promptClaude } from "@/lib/claude";
-import { BrandVoice, BrandVoiceClaudeResponse } from "@/types/branding/brand-voice-claude-response";
+import { BrandVoiceClaudeResponse } from "@/types/branding/brand-voice-claude-response";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BrandVoiceStep() {
-  const { selectedVoiceSet, setSelectedVoiceSet, brandDiscovery } = useBrandingStore();
+  const { selectedVoiceSet, setSelectedVoiceSet, brandDiscovery, brandVoices, setBrandVoices } = useBrandingStore();
   const [loading, setLoading] = useState<boolean>(false);
-  const [brandVoices, setBrandVoices] = useState<BrandVoice[]>([])
 
     const fetchClaudeVoiceBrandSuggestions = async () => {
       try {

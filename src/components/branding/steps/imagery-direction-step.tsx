@@ -12,26 +12,12 @@ import { promptClaude } from '@/lib/claude';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
-interface UnsplashImage {
-  id: string;
-  urls: {
-    regular: string;
-  };
-  alt_description: string;
-}
 
-interface ImageryDirection {
-  id: string,
-  keyword: string,
-  description: string,
-  images: UnsplashImage[]
-}
 
 export default function ImageryDirectionStep() {
-  const { selectedImagerySet, setSelectedImagerySet, brandDiscovery } = useBrandingStore();
+  const { selectedImagerySet, setSelectedImagerySet, brandDiscovery, imagerySampleImages, setImagerySampleImages } = useBrandingStore();
   const [loading, setLoading] = useState(false)
   const [imageLoadingError, setImageLoadingError] = useState<boolean>(false)
-  const [unsplashImages, setUnsplashImages] = useState<ImageryDirection[]>([])
 
     const generateClaudeImageryDirection = async () => {
     try {
@@ -80,7 +66,7 @@ export default function ImageryDirectionStep() {
           }
 
       }))
-      setUnsplashImages([...result])
+      setImagerySampleImages([...result])
     } catch (error) {
       console.log(error)
       setImageLoadingError(true)
@@ -155,7 +141,7 @@ export default function ImageryDirectionStep() {
           onValueChange={setSelectedImagerySet}
           className="space-y-6"
         >
-          {unsplashImages.map((set) => (
+          {imagerySampleImages.map((set) => (
             <Card
               key={set.id}
               className={`p-6 cursor-pointer transition-all ${
