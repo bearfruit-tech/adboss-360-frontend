@@ -1,25 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 import useBrandingStore from "@/stores/use-branding-store";
+import { mockBrandImagesAPI } from "@/lib/brand-images/mock-api";
+import { BrandImage, BrandImageSearchRequest } from "@/types/brand-images";
 
 export default function VisualInspirationStep() {
   const { selectedImages, toggleImageSelection, brandDiscovery } =
     useBrandingStore();
 
-  type InspirationImage = {
-    id: string;
-    title: string;
-    imageUrl: string;
-    author: string;
-    sourceUrl: string;
-    source: string;
-  };
-
-  const [inspirationImages, setInspirationImages] = useState<
-    InspirationImage[]
-  >([]);
+  const [inspirationImages, setInspirationImages] = useState<BrandImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageSource, setImageSource] = useState<"curated" | "unsplash">(
+    "curated"
+  );
 
   const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 
@@ -27,22 +21,32 @@ export default function VisualInspirationStep() {
     fetchInspirationImages();
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fetchUnsplashImages = async (brandDiscoveryData: any) => {
+  const fetchCuratedImages = async (): Promise<BrandImage[]> => {
+    const searchRequest: BrandImageSearchRequest = {
+      industry: brandDiscovery.industry,
+      personality: brandDiscovery.personality,
+      values: brandDiscovery.values,
+      visualPreferences: brandDiscovery.visualPreferences,
+      limit: 16,
+    };
+
+    const response = await mockBrandImagesAPI.searchImages(searchRequest);
+    return response.images;
+  };
+
+  const fetchUnsplashImages = async (): Promise<BrandImage[]> => {
     if (!UNSPLASH_ACCESS_KEY) {
-      throw new Error(
-        "Unsplash access key not found. Add NEXT_PUBLIC_UNSPLASH_ACCESS_KEY to your environment."
-      );
+      throw new Error("Unsplash access key not found.");
     }
 
     const searchTerms = [];
 
-    if (brandDiscoveryData.industry) {
-      searchTerms.push(`${brandDiscoveryData.industry} design`);
-      searchTerms.push(`${brandDiscoveryData.industry} branding`);
+    if (brandDiscovery.industry) {
+      searchTerms.push(`${brandDiscovery.industry} design`);
+      searchTerms.push(`${brandDiscovery.industry} branding`);
     }
 
-    if (brandDiscoveryData.values && brandDiscoveryData.values.length > 0) {
+    if (brandDiscovery.values && brandDiscovery.values.length > 0) {
       const valueTermsMap: Record<string, string> = {
         innovation: "innovative design",
         sustainability: "sustainable design",
@@ -57,7 +61,7 @@ export default function VisualInspirationStep() {
         efficiency: "efficient design",
         transparency: "transparent brand",
       };
-      brandDiscoveryData.values.forEach((valueId: string | number) => {
+      brandDiscovery.values.forEach((valueId: string | number) => {
         const searchTerm = valueTermsMap[valueId];
         if (searchTerm) {
           searchTerms.push(searchTerm);
@@ -65,25 +69,35 @@ export default function VisualInspirationStep() {
       });
     }
 
-    if (brandDiscoveryData.targetAudience) {
-      const { income, education } = brandDiscoveryData.targetAudience;
-      if (income === "luxury" || income === "affluent") {
+    if (
+      brandDiscovery.targetAudience &&
+      Array.isArray(brandDiscovery.targetAudience) &&
+      brandDiscovery.targetAudience.length > 0
+    ) {
+      const primaryAudience = brandDiscovery.targetAudience[0];
+      if (
+        primaryAudience.income === "luxury" ||
+        primaryAudience.income === "affluent"
+      ) {
         searchTerms.push("luxury design", "premium branding", "elegant design");
-      } else if (income === "budget") {
+      } else if (primaryAudience.income === "budget") {
         searchTerms.push(
           "accessible design",
           "simple branding",
           "clean design"
         );
       }
-      if (education === "phd" || education === "masters") {
+      if (
+        primaryAudience.education === "phd" ||
+        primaryAudience.education === "masters"
+      ) {
         searchTerms.push("professional design", "sophisticated branding");
       }
     }
 
-    if (brandDiscoveryData.personality) {
+    if (brandDiscovery.personality) {
       const { formalCasual, traditionalModern, seriousPlayful } =
-        brandDiscoveryData.personality;
+        brandDiscovery.personality;
       if (formalCasual > 70) {
         searchTerms.push("casual design", "friendly branding");
       } else if (formalCasual < 30) {
@@ -131,15 +145,9 @@ export default function VisualInspirationStep() {
     type UnsplashPhoto = {
       id: string;
       alt_description: string | null;
-      urls: {
-        regular: string;
-      };
-      user: {
-        name: string;
-      };
-      links: {
-        html: string;
-      };
+      urls: { regular: string };
+      user: { name: string };
+      links: { html: string };
     };
 
     return data.results.map((photo: UnsplashPhoto) => ({
@@ -149,6 +157,9 @@ export default function VisualInspirationStep() {
       author: photo.user.name,
       sourceUrl: photo.links.html,
       source: "Unsplash",
+      imageType: "identity" as const,
+      tags: [],
+      demographics: [],
     }));
   };
 
@@ -156,7 +167,23 @@ export default function VisualInspirationStep() {
     try {
       setLoading(true);
       setError(null);
-      const images = await fetchUnsplashImages(brandDiscovery);
+
+      if (imageSource === "curated") {
+        try {
+          const images = await fetchCuratedImages();
+          if (images && images.length > 0) {
+            setInspirationImages(images);
+            return;
+          }
+        } catch (curatedError) {
+          console.warn(
+            "Curated images failed, falling back to Unsplash:",
+            curatedError
+          );
+        }
+      }
+
+      const images = await fetchUnsplashImages();
       setInspirationImages(images);
     } catch (err) {
       console.error("Error fetching inspiration images:", err);
@@ -176,6 +203,34 @@ export default function VisualInspirationStep() {
 
   const handleRefresh = () => {
     fetchInspirationImages();
+  };
+
+  const handleSourceToggle = () => {
+    const newSource = imageSource === "curated" ? "unsplash" : "curated";
+    setImageSource(newSource);
+    // Fetch images with new source
+    setLoading(true);
+    if (newSource === "curated") {
+      fetchCuratedImages()
+        .then((images) => {
+          setInspirationImages(images);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching curated images:", err);
+          setLoading(false);
+        });
+    } else {
+      fetchUnsplashImages()
+        .then((images) => {
+          setInspirationImages(images);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching Unsplash images:", err);
+          setLoading(false);
+        });
+    }
   };
 
   if (loading) {
@@ -201,6 +256,7 @@ export default function VisualInspirationStep() {
       </>
     );
   }
+
   return (
     <>
       <div className="mb-6">
@@ -218,6 +274,15 @@ export default function VisualInspirationStep() {
               <div className="text-sm text-gray-500">
                 {selectedImages.length} selected
               </div>
+              <button
+                onClick={handleSourceToggle}
+                className="text-sm text-primary hover:text-primary-dark font-medium px-3 py-1 rounded-md border border-primary"
+                title={`Switch to ${
+                  imageSource === "curated" ? "Unsplash" : "Curated"
+                } images`}
+              >
+                {imageSource === "curated" ? "Try Unsplash" : "Try Curated"}
+              </button>
               <button
                 onClick={handleRefresh}
                 className="text-sm text-primary hover:text-primary-dark font-medium"
@@ -243,27 +308,29 @@ export default function VisualInspirationStep() {
             Choose 3-5 images that best represent your brand&apos;s visual
             direction.
             <span className="text-xs text-gray-500 ml-1">
-              Powered by Unsplash
+              {imageSource === "curated"
+                ? "Curated Brand Collection"
+                : "Powered by Unsplash"}
             </span>
           </p>
         </div>
+
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}
+
         <div className="grid grid-cols-2 gap-4">
           {inspirationImages.map((img) => (
             <div
               key={img.id}
               className={`relative cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 ${
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 selectedImages.includes(img.id as any)
                   ? "border-gradient-gold shadow-md"
                   : "border-transparent hover:border-gray-300"
               }`}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onClick={() => handleImageSelection(img.id as any)}
+              onClick={() => handleImageSelection(img.id)}
               title={`${img.title} by ${img.author}`}
             >
               <img
@@ -272,7 +339,6 @@ export default function VisualInspirationStep() {
                 className="w-full h-full object-cover aspect-square"
                 loading="lazy"
               />
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {selectedImages.includes(img.id as any) && (
                 <div className="absolute top-2 right-2 h-6 w-6 bg-primary rounded-full flex items-center justify-center text-white">
                   <svg
@@ -293,14 +359,27 @@ export default function VisualInspirationStep() {
               )}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2">
                 <p className="text-white text-xs truncate">{img.title}</p>
+                {img.imageType && imageSource === "curated" && (
+                  <p className="text-white text-xs opacity-75 truncate">
+                    {img.imageType.replace("_", " ")}
+                    {img.relevanceScore && ` • ${img.relevanceScore}/100`}
+                  </p>
+                )}
               </div>
             </div>
           ))}
         </div>
+
         <div className="mt-6 text-sm text-gray-600">
           <p>
             These selections will influence your brand&apos;s visual style,
             color palette, and overall aesthetic direction.
+            {imageSource === "curated" && brandDiscovery.industry && (
+              <span className="block mt-1 text-xs text-gray-500">
+                Images are matched based on your industry (
+                {brandDiscovery.industry}) and personality traits.
+              </span>
+            )}
           </p>
         </div>
       </div>

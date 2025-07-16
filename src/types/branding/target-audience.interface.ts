@@ -1,11 +1,11 @@
 export interface TargetAudience {
-  uniqueId: string,
-  targetAudienceType: string,
-  companySize?: string,
-  industry?: string,
-  annualRevenue?: string,
-  decisionMakerRole?: string,
-  geographicMarket?: string,
+  uniqueId: string;
+  targetAudienceType: string;
+  companySize?: string;
+  industry?: string;
+  annualRevenue?: string;
+  decisionMakerRole?: string;
+  geographicMarket?: string;
   ageRange: [number, number];
   gender: string;
   income: string;
@@ -15,5 +15,5 @@ export interface TargetAudience {
 
 export enum TargetAudienceType {
   INDIVIDUAL_CONSUMER = "INDIVIDUAL_CONSUMER",
-  BUSINESS = "BUSINESS"
+  BUSINESS = "BUSINESS",
 }
