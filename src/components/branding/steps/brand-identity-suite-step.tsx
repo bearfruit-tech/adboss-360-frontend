@@ -3,12 +3,13 @@
 
 import { useEffect, useState } from 'react';
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button"
 import useBrandingStore from "@/stores/use-branding-store";
 import { promptClaude } from "@/lib/claude";
 import { BrandDiscovery } from "@/types/branding/brand-discovery.interface";
-
-
-
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import BrandIdentitySuitePDF from '../BrandIdentitySuitePDF';
+import { Download } from "lucide-react";
 
 function CoverSection({ selectedLogo, selectedColors }: { selectedLogo: string | null, selectedColors: string[] }) {
   // Helper to convert hex to RGB for brightness calculation
@@ -740,17 +741,80 @@ function ImageryDirectionSection({ selectedImagerySet, selectedColors }: { selec
 }
 
 export default function BrandIdentitySuiteStep() {
-  const { brandFeedback, setBrandFeedback, selectedColors, selectedLogo, brandDiscovery, selectedFont, selectedImagerySet, selectedVoiceSet } = useBrandingStore();
+  const {
+    brandFeedback,
+    setBrandFeedback,
+    selectedColors,
+    selectedLogo,
+    brandDiscovery,
+    selectedFont,
+    selectedImagerySet,
+    selectedVoiceSet,
+    brandVoices,
+    imagerySampleImages,
+  } = useBrandingStore();
+
+  // Find selected brand voice
+  const selectedBrandVoice = selectedVoiceSet
+    ? brandVoices.find((voice) => voice.id === selectedVoiceSet)
+    : undefined;
+
+  // Find selected imagery set images
+  let imageryUrls: string[] = [];
+  if (selectedImagerySet && imagerySampleImages.length > 0) {
+    const set = imagerySampleImages.find((set) => set.id === selectedImagerySet);
+    if (set && set.images) {
+      imageryUrls = set.images.map((img) => img.urls.regular);
+    }
+  }
+
+  // Convert SVG logo to data URL if present
+  let logoUrl: string | undefined = undefined;
+  if (selectedLogo) {
+    // Create a data URL for the SVG string
+    logoUrl = `data:image/svg+xml;utf8,${encodeURIComponent(selectedLogo)}`;
+  }
+
+  // Brand summary (from BrandOverviewSection)
+  // For now, just use businessDescription as a placeholder
+  const summary = brandDiscovery.businessDescription;
 
   return (
     <div className="space-y-8">
+      <div className="flex justify-end mb-4">
+        <PDFDownloadLink
+          document={
+            <BrandIdentitySuitePDF
+              businessName={brandDiscovery.businessName || 'Brand Identity Suite'}
+              logoUrl={logoUrl}
+              colors={selectedColors}
+              font={selectedFont}
+              brandVoice={selectedBrandVoice}
+              imageryUrls={imageryUrls}
+              summary={summary}
+            />
+          }
+          fileName="brand-identity-suite.pdf"
+        >
+          {({ loading }) => (
+            <Button
+              className="px-4 py-2 bg-primary text-white rounded hover:shadow-lg transition cursor-pointer"
+              disabled={loading}
+              type="button"
+            >
+              {loading ? 'Generating PDF...' : 'Export as PDF'}
+              <Download size={8} strokeWidth={3} />
+            </Button>
+          )}
+        </PDFDownloadLink>
+      </div>
       <CoverSection selectedLogo={selectedLogo} selectedColors={selectedColors} />
       <BrandOverviewSection brandDiscovery={brandDiscovery} selectedColors={selectedColors} />
       <LogoSection selectedLogo={selectedLogo} selectedColors={selectedColors} />
       <ColorPaletteSection selectedColors={selectedColors} />
       <TypographySection selectedFont={selectedFont} />
-      <ImageryDirectionSection selectedImagerySet={selectedImagerySet} selectedColors={selectedColors} />
       <BrandVoiceSection selectedVoiceSet={selectedVoiceSet} selectedColors={selectedColors} />
+      <ImageryDirectionSection selectedImagerySet={selectedImagerySet} selectedColors={selectedColors} />
       <div className="space-y-8">
         {/* Feedback Section */}
         <div className="space-y-4">
