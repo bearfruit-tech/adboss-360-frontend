@@ -19,6 +19,7 @@ export default function VisualInspirationStep() {
 
   useEffect(() => {
     fetchInspirationImages();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const fetchCuratedImages = async (): Promise<BrandImage[]> => {

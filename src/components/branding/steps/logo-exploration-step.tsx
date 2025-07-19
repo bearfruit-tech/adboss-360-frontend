@@ -37,6 +37,10 @@ export default function LogoExplorationStep() {
     }
   }, [hasGeneratedLogos]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const generateLogoOptions = async () => {
     try {
       setLoading(true);
