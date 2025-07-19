@@ -68,6 +68,10 @@ export default function ColorHarmonyStep() {
     generateClaudeColorPallete();
   }, [])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const generateClaudeColorPallete = async () => {
     try {
       setLoading(true);

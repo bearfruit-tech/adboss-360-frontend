@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent } from 'react';
+import { useEffect, ChangeEvent } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -15,6 +15,10 @@ import TargerAudienceForm from './brand-discovery-step-components/target-audienc
 
 export default function BrandDiscoveryStep() {
   const { brandDiscovery, updateBrandDiscovery, toggleValue, toggleProblem } = useBrandingStore();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   // Create helper functions with proper typing
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string): void => {

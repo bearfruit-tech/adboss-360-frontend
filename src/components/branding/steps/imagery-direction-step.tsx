@@ -15,7 +15,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 
 export default function ImageryDirectionStep() {
-  const { selectedImagerySet, setSelectedImagerySet, brandDiscovery, imagerySampleImages, setImagerySampleImages } = useBrandingStore();
+  const { selectedImagerySet,
+    setSelectedImagerySet,
+    brandDiscovery,
+    imagerySampleImages,
+    setImagerySampleImages,
+    setSelectedImageryDirection
+  } = useBrandingStore();
   const [loading, setLoading] = useState(false)
   const [imageLoadingError, setImageLoadingError] = useState<boolean>(false)
 
@@ -80,6 +86,10 @@ export default function ImageryDirectionStep() {
     generateClaudeImageryDirection();
   }, [])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   return (
     <div className="space-y-8">
       <div>
@@ -138,7 +148,14 @@ export default function ImageryDirectionStep() {
       {(!loading && !imageLoadingError) && 
         <RadioGroup
           value={selectedImagerySet}
-          onValueChange={setSelectedImagerySet}
+          onValueChange={(value) => {
+            setSelectedImagerySet(value);
+            console.log('Selected imagery set:', value);
+            const selectedSet = imagerySampleImages.find((set) => set.id === value);
+            if (selectedSet) {
+              setSelectedImageryDirection(selectedSet);
+            }
+          }}
           className="space-y-6"
         >
           {imagerySampleImages.map((set) => (

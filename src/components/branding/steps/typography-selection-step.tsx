@@ -26,7 +26,7 @@ export default function TypographySelectionStep() {
     try {
       setLoading(true)
       const response = await promptClaude<TypographyClaudeResponse>(
-        "Please suggest 3 typography styles or font combinations that would suit this brand’s identity",
+        "Please suggest 3 typography styles or font combinations that would suit this brand's identity",
         ` 
         Each typography item should be an object with the following structure:
 
@@ -100,6 +100,10 @@ export default function TypographySelectionStep() {
 
   useEffect(() => {
     fetchClaudeTypographySuggestions();
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   return (

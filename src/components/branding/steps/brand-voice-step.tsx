@@ -64,6 +64,10 @@ export default function BrandVoiceStep() {
       fetchClaudeVoiceBrandSuggestions();
     }, [])
 
+    useEffect(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
+
   return (
     <div className="space-y-8">
       <div>
