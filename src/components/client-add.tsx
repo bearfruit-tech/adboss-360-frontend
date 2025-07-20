@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 import { Cookies } from "@/constants/cookies";
 import { Loader2 } from "lucide-react";
 import useClientStore from "@/stores/use-client-store";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   clientName: z.string({ message: "The name is required" }).max(100),
@@ -73,6 +74,7 @@ const ClientCreateDialogue = ({ open, setOpen }: Props) => {
     })
       .then((response) => {
         console.log("client created successfully! ,", response);
+        toast.success("Client created successfully.")
         form.reset({
           clientName: "",
           description: "",
@@ -85,6 +87,7 @@ const ClientCreateDialogue = ({ open, setOpen }: Props) => {
       })
       .catch((error) => {
         console.log("error creating a client, ", error);
+        toast.error("There was an error in creating a client. Please contact support.");
         setLoading(false);
       });
   };

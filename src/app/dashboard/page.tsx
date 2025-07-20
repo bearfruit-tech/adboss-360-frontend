@@ -88,6 +88,31 @@ export default function DashboardPage() {
           <section className="mt-8">
             <h2 className="text-xl font-normal">Current Selection</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="flex items-center gap-4 rounded-md bg-muted/50 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-user-2"
+                  >
+                    <circle cx="12" cy="8" r="5" />
+                    <path d="M20 21a8 8 0 1 0-16 0" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-normal">
+                    {isClientSelected() ? client.name : "No client is selected"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">Client</p>
+                </div>
+              </div>
               <div className="flex items-center gap-4 rounded-md bg-muted/50 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
                   <svg
@@ -112,31 +137,6 @@ export default function DashboardPage() {
                       : "No project is selected"}
                   </h3>
                   <p className="text-sm text-muted-foreground">Project</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 rounded-md bg-muted/50 p-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-user-2"
-                  >
-                    <circle cx="12" cy="8" r="5" />
-                    <path d="M20 21a8 8 0 1 0-16 0" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-normal">
-                    {isClientSelected() ? client.name : "No client is selected"}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">Client</p>
                 </div>
               </div>
             </div>
