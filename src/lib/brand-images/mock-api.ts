@@ -245,7 +245,7 @@ class MockBrandImagesAPI {
   }
 
   async searchUnsplashImages(
-    request: BrandImageSearchRequest
+    //request: BrandImageSearchRequest
   ): Promise<BrandImageSearchResponse> {
     await this.delay();
 

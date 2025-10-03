@@ -51,6 +51,7 @@ export default function ColorHarmonyStep() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onCloseColorPicker = (c: any) => {
     setColor(c.hex)
     if(color == ""){

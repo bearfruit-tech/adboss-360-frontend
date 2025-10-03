@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import useMarketingResearchStore from "@/stores/use-marketing-research-store";
 
 const marketingResearchSteps = [
   { id: 0, title: "Research Objectives & Scope Definition" },
@@ -10,7 +10,7 @@ const marketingResearchSteps = [
 ];
 
 export default function MarketingResearchStepper() {
-  const [activeStep] = useState(0); // This will be managed by a store later
+  const { activeStep } = useMarketingResearchStore();
   
   return (
     <div className="bg-white border-b border-gray-200 py-4 px-6">

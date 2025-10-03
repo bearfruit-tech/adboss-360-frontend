@@ -327,7 +327,7 @@ export default function VisualInspirationStep() {
             <div
               key={img.id}
               className={`relative cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 ${
-                selectedImages.includes(img.id as any)
+                selectedImages.includes(img.id as unknown as number)
                   ? "border-gradient-gold shadow-md"
                   : "border-transparent hover:border-gray-300"
               }`}

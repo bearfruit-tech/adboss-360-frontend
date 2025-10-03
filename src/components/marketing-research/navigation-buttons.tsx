@@ -1,25 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import useMarketingResearchStore from "@/stores/use-marketing-research-store";
 
 export default function NavigationButtons() {
-  const [activeStep, setActiveStep] = useState(0); // This will be managed by a store later
-  const [loading] = useState(false);
-  const [nextStepLoading] = useState(false);
-
-  const goToPreviousStep = () => {
-    // This will be implemented with store later
-    console.log("Previous step");
-  };
-
-  const goToNextStep = () => {
-    // This will be implemented with store later
-    console.log("Next step");
-  };
+  const [loading, setLoading] = useState(false);
+  const [nextStepLoading, setNextStepLoading] = useState(false);
+  const { activeStep, goToNextStep, goToPreviousStep, researchObjectives } = useMarketingResearchStore();
 
   const handleSave = async () => {
     // This will be implemented with API calls later
     console.log("Save progress");
+    console.log(researchObjectives);
   };
 
   return (
@@ -39,7 +31,11 @@ export default function NavigationButtons() {
         ) : (
           <button
             className="mr-3 px-4 py-2 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 cursor-pointer"
-            onClick={handleSave}
+            onClick={async () => {
+              setLoading(true);
+              await handleSave();
+              setLoading(false);
+            }}
           >
             Save Progress
           </button>
@@ -52,8 +48,11 @@ export default function NavigationButtons() {
         ) : (
           <button
             className="px-6 py-2 bg-primary text-white rounded-md font-medium hover:bg-primary/90 cursor-pointer"
+            disabled={activeStep === 3}
             onClick={async () => {
+              setNextStepLoading(true);
               await handleSave();
+              setNextStepLoading(false);
               goToNextStep();
             }}
           >

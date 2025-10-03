@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import useMarketingResearchStore from "@/stores/use-marketing-research-store";
 import Step1ResearchObjectives from './step-1-research-objectives';
 import Step2ResearchDesign from './step-2-research-design';
 import Step3DataCollection from './step-3-data-collection';
@@ -8,7 +8,7 @@ import Step4AnalysisReporting from './step-4-analysis-reporting';
 
 // This component decides which step to show based on the activeStep
 export default function StepContent() {
-  const [activeStep] = useState(0); // This will be managed by a store later
+  const { activeStep } = useMarketingResearchStore();
   
   // Render the appropriate step based on activeStep
   const renderStep = () => {

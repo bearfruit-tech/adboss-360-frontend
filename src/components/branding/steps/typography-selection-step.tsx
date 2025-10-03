@@ -94,6 +94,7 @@ export default function TypographySelectionStep() {
     document.head.appendChild(link);
   };
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const isFontLoaded = (fontName:string) => {
     return loadedFonts.has(fontName);
   };
