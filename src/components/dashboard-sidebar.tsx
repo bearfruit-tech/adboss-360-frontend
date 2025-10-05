@@ -78,7 +78,7 @@ export function DashboardSidebar({
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild className={activeMenuItem === MenuItem.DigitalMarketing ? "bg-purple-light-bg text-slate-700" : ""}>
-                <Link href="#">
+                <Link href="/digital-marketing-campaign">
                   <BarChart2 className="h-5 w-5" />
                   <span>Digital Marketing</span>
                 </Link>
