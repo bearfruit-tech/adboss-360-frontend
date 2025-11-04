@@ -32,6 +32,16 @@ const TargerAudienceForm = () => {
   const uid = new ShortUniqueId({length: 10});
 
   const addTargetAudience = () => {
+    // Validate that at least some data is filled in
+    const hasData = targetAudienceType === TargetAudienceType.BUSINESS
+      ? (targetAudience.companySize || targetAudience.industry || targetAudience.annualRevenue || targetAudience.decisionMakerRole || targetAudience.geographicMarket)
+      : (targetAudience.ageRange[0] > 0 || targetAudience.ageRange[1] > 0 || targetAudience.gender || targetAudience.income || targetAudience.education || targetAudience.location)
+
+    if (!hasData) {
+      alert('Please fill in at least some target audience information before adding.')
+      return
+    }
+
     updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID(), targetAudienceType: targetAudienceType})
     setTargetAudience({
       uniqueId: "",
@@ -48,6 +58,27 @@ const TargerAudienceForm = () => {
       location: ""
     })
     setTargetAudienceType("BUSINESS")
+  }
+
+  // Export function to save current form data (to be called from parent)
+  const saveCurrentTargetAudience = () => {
+    // Check if there's any data in the current form
+    const hasData = targetAudienceType === TargetAudienceType.BUSINESS
+      ? (targetAudience.companySize || targetAudience.industry || targetAudience.annualRevenue || targetAudience.decisionMakerRole || targetAudience.geographicMarket)
+      : (targetAudience.ageRange[0] > 0 || targetAudience.ageRange[1] > 0 || targetAudience.gender || targetAudience.income || targetAudience.education || targetAudience.location)
+
+    if (hasData && !targetAudience.uniqueId) {
+      // Only save if there's data and it hasn't been saved yet
+      updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID(), targetAudienceType: targetAudienceType})
+      return true
+    }
+    return false
+  }
+
+  // Expose save function via window (for navigation buttons to access)
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__saveCurrentTargetAudience = saveCurrentTargetAudience
   }
 
   const setBusinessTypeValue = (v: string) => {
@@ -278,8 +309,10 @@ const TargerAudienceForm = () => {
             }
 
           </CardContent>
-          <div className='pl-6'>
-            <Button className="cursor-pointer" variant="secondary" onClick={() => addTargetAudience()}>Add another target audience</Button>
+          <div className='pl-6 pb-4'>
+            <Button className="cursor-pointer" variant="secondary" onClick={() => addTargetAudience()}>
+              {brandDiscovery.targetAudience.length > 0 ? 'Add Another Target Audience' : 'Add Target Audience'}
+            </Button>
           </div>
       </>
   )

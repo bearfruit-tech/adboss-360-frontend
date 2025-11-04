@@ -69,6 +69,24 @@ export default function NavigationButtons({ hasBrand }: Props) {
   // Add type for the click handler
   const handleSave = async (): Promise<void> => {
     const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/branding`;
+
+    // Auto-save any unsaved target audience data from the form
+    if (typeof window !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const saveFunc = (window as any).__saveCurrentTargetAudience
+      if (saveFunc) {
+        const saved = saveFunc()
+        if (saved) {
+          console.log('Auto-saved unsaved target audience data')
+        }
+      }
+    }
+
+    // Debug logging
+    console.log('=== SAVING BRANDING DATA ===');
+    console.log('Target Audiences:', brandDiscovery.targetAudience);
+    console.log('Full brandDiscovery:', brandDiscovery);
+
     try {
       if (!hasBrand) {
         const branding = await authorizedApiRequest(HttpMethods.POST, url, {
@@ -90,7 +108,7 @@ export default function NavigationButtons({ hasBrand }: Props) {
             selectedImageryDirection,
           },
         });
-        console.log(branding.data);
+        console.log('Saved branding response:', branding.data);
       } else {
         const branding = await authorizedApiRequest(HttpMethods.PUT, url, {
           projectId: currentProject.id,
@@ -111,7 +129,7 @@ export default function NavigationButtons({ hasBrand }: Props) {
             selectedImageryDirection,
           },
         });
-        console.log(branding.data);
+        console.log('Updated branding response:', branding.data);
       }
     } catch (error) {
       console.log(error);

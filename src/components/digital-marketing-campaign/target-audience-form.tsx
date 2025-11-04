@@ -1,7 +1,7 @@
 import useDigitalMarketingCampaignStore from "@/stores/use-digital-marketing-campaign-store"
 import useClientStore from "@/stores/use-client-store"
 import { TargetAudience, TargetAudienceType } from "@/types/branding/target-audience.interface"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import TargetAudienceDetails from "./target-audience-details"
 import { CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -16,22 +16,12 @@ import { HttpMethods } from "@/constants/api_methods"
 import { APIRoutes } from "@/constants/api_routes"
 import { Loader2 } from "lucide-react"
 
-interface ProjectBrandingData {
-  projectId: string
-  projectName: string
-  metadata: {
-    brandDiscovery: {
-      targetAudience: TargetAudience[]
-    }
-  }
-}
-
 const TargetAudienceForm = () => {
   const [mode, setMode] = useState<'select' | 'create'>('select')
   const [selectedExistingId, setSelectedExistingId] = useState<string>('')
   const [selectedProjectId, setSelectedProjectId] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [availableTargetAudiences, setAvailableTargetAudiences] = useState<Array<TargetAudience & { projectName: string }>>([])
+  const [availableTargetAudiences, setAvailableTargetAudiences] = useState<TargetAudience[]>([])
   const [targetAudienceType, setTargetAudienceType] = useState<`${TargetAudienceType.BUSINESS}`|`${TargetAudienceType.INDIVIDUAL_CONSUMER}`>("BUSINESS")
   const [targetAudience, setTargetAudience] = useState<TargetAudience>({
     uniqueId: "",
@@ -52,46 +42,55 @@ const TargetAudienceForm = () => {
 
   const uid = new ShortUniqueId({length: 10});
 
-  useEffect(() => {
-    if (currentClient.id && currentClient.projects.length > 0) {
-      fetchTargetAudiences()
-    }
-  }, [currentClient])
+  const fetchTargetAudiencesForProject = async (projectId: string) => {
+    if (!projectId) return
 
-  const fetchTargetAudiences = async () => {
     setLoading(true)
-    const allTargetAudiences: Array<TargetAudience & { projectName: string }> = []
+    setAvailableTargetAudiences([])
+    setSelectedExistingId('')
 
     try {
-      // Fetch branding data for each project
-      for (const project of currentClient.projects) {
-        try {
-          const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/branding?projectId=${project.id}`
-          const response = await authorizedApiRequest(HttpMethods.GET, url, {})
+      const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/branding/${projectId}`
+      const response = await authorizedApiRequest(HttpMethods.GET, url, {})
 
-          if (response.data?.metadata?.brandDiscovery?.targetAudience) {
-            const targetAudiences = response.data.metadata.brandDiscovery.targetAudience
-            targetAudiences.forEach((ta: TargetAudience) => {
-              allTargetAudiences.push({
-                ...ta,
-                projectName: project.name
-              })
-            })
-          }
-        } catch (error) {
-          console.log(`No branding data for project ${project.name}`)
-        }
+      console.log('=== FETCHING TARGET AUDIENCES ===')
+      console.log('Project ID:', projectId)
+      console.log('Full response:', response.data)
+      console.log('Brand Discovery:', response.data?.metadata?.brandDiscovery)
+      console.log('Target Audiences:', response.data?.metadata?.brandDiscovery?.targetAudience)
+
+      if (response.data?.metadata?.brandDiscovery?.targetAudience) {
+        const targetAudiences = response.data.metadata.brandDiscovery.targetAudience
+        setAvailableTargetAudiences(targetAudiences)
+        console.log('Set available target audiences:', targetAudiences)
+      } else {
+        setAvailableTargetAudiences([])
+        console.log('No target audiences found')
       }
-
-      setAvailableTargetAudiences(allTargetAudiences)
     } catch (error) {
-      console.error('Error fetching target audiences:', error)
+      console.log(`No branding data for selected project:`, error)
+      setAvailableTargetAudiences([])
     } finally {
       setLoading(false)
     }
   }
 
+  const handleProjectChange = (projectId: string) => {
+    setSelectedProjectId(projectId)
+    fetchTargetAudiencesForProject(projectId)
+  }
+
   const addTargetAudience = () => {
+    // Validate that at least some data is filled in
+    const hasData = targetAudienceType === TargetAudienceType.BUSINESS
+      ? (targetAudience.companySize || targetAudience.industry || targetAudience.annualRevenue || targetAudience.decisionMakerRole || targetAudience.geographicMarket)
+      : (targetAudience.ageRange[0] > 0 || targetAudience.ageRange[1] > 0 || targetAudience.gender || targetAudience.income || targetAudience.education || targetAudience.location)
+
+    if (!hasData) {
+      alert('Please fill in at least some target audience information before adding.')
+      return
+    }
+
     updateTargetAudience({...targetAudience, uniqueId: uid.randomUUID(), targetAudienceType: targetAudienceType})
     setTargetAudience({
       uniqueId: "",
@@ -113,9 +112,7 @@ const TargetAudienceForm = () => {
   const addExistingTargetAudience = () => {
     const existing = availableTargetAudiences.find(ta => ta.uniqueId === selectedExistingId)
     if (existing) {
-      // Remove projectName before adding
-      const { projectName, ...targetAudienceData } = existing
-      updateTargetAudience(targetAudienceData)
+      updateTargetAudience(existing)
       setSelectedExistingId('')
     }
   }
@@ -125,12 +122,17 @@ const TargetAudienceForm = () => {
     setTargetAudienceType(value)
   }
 
-  const getTargetAudienceLabel = (ta: TargetAudience & { projectName: string }) => {
-    const baseLabel = ta.targetAudienceType === TargetAudienceType.BUSINESS
-      ? `B2B: ${ta.companySize || 'N/A'} - ${ta.industry || 'N/A'}`
-      : `B2C: Age ${ta.ageRange[0]}-${ta.ageRange[1]} - ${ta.gender || 'N/A'} - ${ta.location || 'N/A'}`
+  const getTargetAudienceLabel = (ta: TargetAudience) => {
+    if (ta.targetAudienceType === TargetAudienceType.BUSINESS) {
+      return `B2B: ${ta.companySize || 'N/A'} - ${ta.industry || 'N/A'}`
+    } else {
+      return `B2C: Age ${ta.ageRange[0]}-${ta.ageRange[1]} - ${ta.gender || 'N/A'} - ${ta.location || 'N/A'}`
+    }
+  }
 
-    return `[${ta.projectName}] ${baseLabel}`
+  const getSelectedProjectName = () => {
+    const project = currentClient.projects.find(p => p.id === selectedProjectId)
+    return project ? project.name : ''
   }
 
   return (
@@ -159,43 +161,67 @@ const TargetAudienceForm = () => {
 
             {mode === 'select' && (
               <>
-                {loading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                    <span className="ml-2">Loading target audiences...</span>
-                  </div>
-                ) : (
+                <div>
+                  <Label htmlFor="projectSelect" className="mb-2 block">Select Project</Label>
+                  <Select value={selectedProjectId} onValueChange={handleProjectChange}>
+                    <SelectTrigger id="projectSelect">
+                      <SelectValue placeholder="Select a project to view target audiences" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {currentClient.projects.length === 0 ? (
+                        <SelectItem value="none" disabled>No projects available</SelectItem>
+                      ) : (
+                        currentClient.projects.map((project) => (
+                          <SelectItem key={project.id} value={project.id}>
+                            {project.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedProjectId && (
                   <>
-                    <div>
-                      <Label htmlFor="existingAudience" className="mb-2 block">Select Target Audience</Label>
-                      <Select value={selectedExistingId} onValueChange={setSelectedExistingId}>
-                        <SelectTrigger id="existingAudience">
-                          <SelectValue placeholder="Select a target audience from project branding data" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableTargetAudiences.length === 0 ? (
-                            <SelectItem value="none" disabled>No target audiences available</SelectItem>
-                          ) : (
-                            availableTargetAudiences
-                              .filter(ta => !campaignFoundation.targetAudience.some(cta => cta.uniqueId === ta.uniqueId))
-                              .map((ta) => (
-                                <SelectItem key={ta.uniqueId} value={ta.uniqueId}>
-                                  {getTargetAudienceLabel(ta)}
-                                </SelectItem>
-                              ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Button
-                        onClick={addExistingTargetAudience}
-                        disabled={!selectedExistingId}
-                        variant="secondary"
-                      >
-                        Add Selected Audience
-                      </Button>
-                    </div>
+                    {loading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span className="ml-2">Loading target audiences from {getSelectedProjectName()}...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <Label htmlFor="existingAudience" className="mb-2 block">Select Target Audience from {getSelectedProjectName()}</Label>
+                          <Select value={selectedExistingId} onValueChange={setSelectedExistingId}>
+                            <SelectTrigger id="existingAudience">
+                              <SelectValue placeholder="Select a target audience" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableTargetAudiences.length === 0 ? (
+                                <SelectItem value="none" disabled>No target audiences available for this project</SelectItem>
+                              ) : (
+                                availableTargetAudiences
+                                  .filter(ta => !campaignFoundation.targetAudience.some(cta => cta.uniqueId === ta.uniqueId))
+                                  .map((ta) => (
+                                    <SelectItem key={ta.uniqueId} value={ta.uniqueId}>
+                                      {getTargetAudienceLabel(ta)}
+                                    </SelectItem>
+                                  ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Button
+                            onClick={addExistingTargetAudience}
+                            disabled={!selectedExistingId}
+                            variant="secondary"
+                          >
+                            Add Selected Audience
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </>
@@ -417,7 +443,9 @@ const TargetAudienceForm = () => {
              </>
             }
                 <div className='mt-4'>
-                  <Button className="cursor-pointer" variant="secondary" onClick={() => addTargetAudience()}>Add Target Audience</Button>
+                  <Button className="cursor-pointer" variant="secondary" onClick={() => addTargetAudience()}>
+                    {campaignFoundation.targetAudience.length > 0 ? 'Add Another Target Audience' : 'Add Target Audience'}
+                  </Button>
                 </div>
               </>
             )}
