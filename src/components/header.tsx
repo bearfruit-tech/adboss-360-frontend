@@ -13,12 +13,10 @@ import {
 } from "./ui/dropdown-menu";
 import { LogOut } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 
 
 export function Header() {
   const [userName, setUserName] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
     if (hasCookie(Cookies.NAME)) {

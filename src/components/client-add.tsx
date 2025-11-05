@@ -83,7 +83,7 @@ const ClientCreateDialogue = ({ open, setOpen }: Props) => {
         });
         setOpen(false);
         setLoading(false);
-        clientIsAdded(true);
+        clientIsAdded();
       })
       .catch((error) => {
         console.log("error creating a client, ", error);

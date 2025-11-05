@@ -185,13 +185,13 @@ export default function Index() {
 
             {/* Hero Image */}
             <div className="relative lg:order-last flex items-center justify-center lg:justify-end">
-              <div className="relative w-full max-w-[600px] rounded-2xl overflow-hidden shadow-2xl border-2 border-[#E8DCC8]/10 bg-gradient-to-br from-[#2F2F31] via-[#3A3A3C] to-[#2F2F31]">
+              <div className="relative w-full max-w-[450px] rounded-2xl overflow-hidden shadow-2xl border-2 border-[#E8DCC8]/10 bg-gradient-to-br from-[#2F2F31] via-[#3A3A3C] to-[#2F2F31]">
                 <Image
                   src="/hero.svg"
                   alt="AB360 Platform Dashboard"
-                  width={1200}
-                  height={750}
-                  className="w-full h-auto opacity-90"
+                  width={500}
+                  height={375}
+                  className="w-full h-full object-cover opacity-90"
                   priority
                 />
                 {/* Floating Elements */}

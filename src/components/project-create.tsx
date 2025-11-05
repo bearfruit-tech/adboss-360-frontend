@@ -132,7 +132,7 @@ const ProjectCreateDialogue = ({ open, setOpen }: Props) => {
       .then(() => {
         setOpen(false);
         form.reset({ name: "", client: "", description: "" });
-        clientIsAdded(true);
+        clientIsAdded();
         setLoading(false);
       })
       .catch((error) => {

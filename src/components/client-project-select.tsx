@@ -76,6 +76,16 @@ const ClientProjectSelect = () => {
     }
   }, [clientAdded]);
 
+  // Load persisted projects when client is loaded from storage
+  useEffect(() => {
+    if (client.id && clients.length > 0) {
+      const currentClient = clients.find((c) => c.id === client.id);
+      if (currentClient?.projects) {
+        setProjects(currentClient.projects);
+      }
+    }
+  }, [client.id, clients]);
+
   const getOrganizationClients = async () => {
     const id = `${getCookie(Cookies.ORGANIZATION_ID)}`;
     const url = `${APIRoutes.ORGANIZATIONS.GET_ORGANIZATION}/${id}/clients`;
@@ -164,7 +174,7 @@ const ClientProjectSelect = () => {
             <>
               <Select
                 onValueChange={(value) => getClientProjects(value)}
-                defaultValue={client.id && client.id}
+                value={client.id || undefined}
               >
                 <SelectTrigger className="w-[180px]">
                   <UserIcon />
@@ -190,7 +200,7 @@ const ClientProjectSelect = () => {
                     <Select
                       disabled={!canSelectAProject()}
                       onValueChange={(value) => onProjectSelect(value)}
-                      defaultValue={project.id && project.id}
+                      value={project.id || undefined}
                     >
                       <SelectTrigger className="w-[180px]">
                         <Folder />
