@@ -198,7 +198,7 @@ export default function VisualInspirationStep() {
     }
   };
 
-  const handleImageSelection = (imageId: number) => {
+  const handleImageSelection = (imageId: number | string) => {
     toggleImageSelection(imageId);
   };
 
@@ -340,7 +340,7 @@ export default function VisualInspirationStep() {
                 className="w-full h-full object-cover aspect-square"
                 loading="lazy"
               />
-              {selectedImages.includes(img.id as any) && (
+              {selectedImages.includes(img.id) && (
                 <div className="absolute top-2 right-2 h-6 w-6 bg-primary rounded-full flex items-center justify-center text-white">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

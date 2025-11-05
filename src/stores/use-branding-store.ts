@@ -31,7 +31,7 @@ export interface BrandingState {
   brandingStep: BrandingStep,
   activeStep: number;
   brandDiscovery: BrandDiscovery;
-  selectedImages: number[];
+  selectedImages: (number | string)[];
   selectedLogo: string | null;
   selectedColors: string[];
   selectedFont: string;
@@ -54,7 +54,7 @@ export interface BrandingState {
   updateBrandDiscovery: (field: string, value: any) => void;
   toggleValue: (valueId: string) => void;
   toggleProblem: (problemId: string) => void;
-  toggleImageSelection: (index: number) => void;
+  toggleImageSelection: (index: number | string) => void;
   setSelectedLogo: (svg: string) => void;
   setSelectedColors: (colors: string[]) => void;
   setSelectedFont: (font: string) => void;
@@ -65,7 +65,7 @@ export interface BrandingState {
   setBrandFeedback: (feedback: string) => void;
   updateValues: (values: string[]) => void;
   updateProblems: (values: string[]) => void;
-  updateSelectedImages: (values: number[]) => void;
+  updateSelectedImages: (values: (number | string)[]) => void;
   updateSelectedLogo: (svg: string) => void;
   updateImagerySet: (value: string) => void;
   updateVoiceSet: (value: string) => void;
@@ -134,7 +134,7 @@ const useBrandingStore = create<BrandingState>((set) => ({
       activeStep: Math.max(0, state.activeStep - 1),
     })),
 
-  updateSelectedImages: (values: number[]) =>
+  updateSelectedImages: (values: (number | string)[]) =>
     set((state) => ({
       ...state,
       selectedImages: [...values],
@@ -232,7 +232,7 @@ const useBrandingStore = create<BrandingState>((set) => ({
       };
     }),
 
-  toggleImageSelection: (index: number) =>
+  toggleImageSelection: (index: number | string) =>
     set((state) => {
       const selectedImages = [...state.selectedImages];
       const imageIndex = selectedImages.indexOf(index);

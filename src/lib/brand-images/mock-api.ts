@@ -245,7 +245,8 @@ class MockBrandImagesAPI {
   }
 
   async searchUnsplashImages(
-    //request: BrandImageSearchRequest
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _request: BrandImageSearchRequest
   ): Promise<BrandImageSearchResponse> {
     await this.delay();
 

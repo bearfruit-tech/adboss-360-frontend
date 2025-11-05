@@ -1,5 +1,5 @@
 export interface BrandImage {
-  id: number;
+  id: number | string;
   title: string;
   description?: string;
   imageUrl: string;

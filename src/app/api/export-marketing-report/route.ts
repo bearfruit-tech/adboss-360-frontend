@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         'Content-Disposition': 'attachment; filename="marketing-research-report.pdf"',
       },
     });
-  } catch (error) {
+  } catch {
     if (browser) {
       await browser.close();
     }

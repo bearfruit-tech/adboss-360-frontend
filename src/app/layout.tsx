@@ -1,5 +1,5 @@
 import './global.css';
-import { Lexend } from 'next/font/google';
+import { Mulish } from 'next/font/google';
 import SonnerProvider from '@/app/SonnerProvider';
 
 export const metadata = {
@@ -7,9 +7,10 @@ export const metadata = {
   description: "Your agency's complete marketing ecosystem.",
 };
 
-const lexend = Lexend({
+const mulish = Mulish({
   subsets: ['latin'],
-  variable: '--font-lexend',
+  variable: '--font-mulish',
+  display: 'swap',
 });
 
 export default function RootLayout({
@@ -19,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className='bg-light-gray'>
-      <body className={`antialised ${lexend.variable}`}>{children}
+      <body className={`antialiased ${mulish.variable} font-sans`}>{children}
       <SonnerProvider />
       </body>
     </html>

@@ -24,37 +24,14 @@ export default function BrandIdentitySuiteStep() {
     selectedLogo,
     brandDiscovery,
     selectedFont,
-    selectedImagerySet,
     selectedImageryDirection,
     selectedVoiceSet,
     brandVoices,
-    imagerySampleImages,
     summary,
   } = useBrandingStore();
 
-  // Find selected brand voice
-  const selectedBrandVoice = selectedVoiceSet
-    ? brandVoices.find((voice) => voice.id === selectedVoiceSet)
-    : undefined;
-
-  // Find selected imagery set images
-  let imageryUrls: string[] = [];
-  if (selectedImagerySet && imagerySampleImages.length > 0) {
-    const set = imagerySampleImages.find((set) => set.id === selectedImagerySet);
-    if (set && set.images) {
-      imageryUrls = set.images.map((img) => img.urls.regular);
-    }
-  }
-
-  // Convert SVG logo to data URL if present
-  let logoUrl: string | undefined = undefined;
-  if (selectedLogo) {
-    // Create a data URL for the SVG string
-    logoUrl = `data:image/svg+xml;utf8,${encodeURIComponent(selectedLogo)}`;
-  }
-
-  // Brand summary (from BrandOverviewSection)
-  // For now, just use businessDescription as a placeholder
+  // Note: Previously computed selectedBrandVoice, imageryUrls, and logoUrl
+  // These have been removed as they are computed/used within child components
 
   const handleExport = async () => {
     setExportLoading(true);

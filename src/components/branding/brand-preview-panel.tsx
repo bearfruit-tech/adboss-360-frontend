@@ -245,9 +245,9 @@ export default function BrandPreviewPanel() {
                 Visual Direction
               </h4>
               <div className="grid grid-cols-3 gap-2">
-                {selectedImages.map((index) => (
+                {selectedImages.map((imageId, index) => (
                   <div
-                    key={index}
+                    key={imageId}
                     className="rounded-md overflow-hidden border border-gray-200"
                   >
                     <img
