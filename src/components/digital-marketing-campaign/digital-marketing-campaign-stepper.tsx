@@ -24,7 +24,7 @@ export default function DigitalMarketingCampaignStepper() {
               <div className="relative w-full flex items-center">
                 <div className="flex flex-col items-center w-full">
                   <div
-                    className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium z-10
+                    className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium z-5
                     ${step.id < activeStep ? 'bg-primary text-white' :
                       step.id === activeStep ? 'bg-primary text-white' :
                       'bg-gray-200 text-gray-500'}`}
