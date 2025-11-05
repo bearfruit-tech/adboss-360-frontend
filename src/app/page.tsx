@@ -3,7 +3,7 @@
 import { RefObject } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, Zap, Target, TrendingUp, Users, Shield } from 'lucide-react';
 
@@ -12,6 +12,16 @@ export default function Index() {
   const servicesRef = useRef<HTMLElement>(null)
   const testimonialsRef = useRef<HTMLElement>(null)
   const pricingRef = useRef<HTMLElement>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const scrollToPageSection = (refElement: RefObject<HTMLElement | null>) => {
     if(refElement.current != null){
@@ -22,8 +32,12 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-md border-b transition-all duration-300 px-6 lg:px-8 ${
+        isScrolled
+          ? 'bg-background/80 border-border/50'
+          : 'bg-[#3A3A3C]/95 border-[#E8DCC8]/10'
+      }`}>
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center">
               <Image
@@ -36,25 +50,49 @@ export default function Index() {
               />
             </Link>
             <div className="hidden md:flex items-center gap-8">
-              <button onClick={() => scrollToPageSection(featuresRef)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={() => scrollToPageSection(featuresRef)} className={`text-sm font-medium transition-colors ${
+                isScrolled
+                  ? 'text-muted-foreground hover:text-foreground'
+                  : 'text-[#E8DCC8]/70 hover:text-[#E8DCC8]'
+              }`}>
                 Features
               </button>
-              <button onClick={() => scrollToPageSection(servicesRef)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={() => scrollToPageSection(servicesRef)} className={`text-sm font-medium transition-colors ${
+                isScrolled
+                  ? 'text-muted-foreground hover:text-foreground'
+                  : 'text-[#E8DCC8]/70 hover:text-[#E8DCC8]'
+              }`}>
                 Services
               </button>
-              <button onClick={() => scrollToPageSection(testimonialsRef)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={() => scrollToPageSection(testimonialsRef)} className={`text-sm font-medium transition-colors ${
+                isScrolled
+                  ? 'text-muted-foreground hover:text-foreground'
+                  : 'text-[#E8DCC8]/70 hover:text-[#E8DCC8]'
+              }`}>
                 Testimonials
               </button>
-              <button onClick={() => scrollToPageSection(pricingRef)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={() => scrollToPageSection(pricingRef)} className={`text-sm font-medium transition-colors ${
+                isScrolled
+                  ? 'text-muted-foreground hover:text-foreground'
+                  : 'text-[#E8DCC8]/70 hover:text-[#E8DCC8]'
+              }`}>
                 Pricing
               </button>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/sign-in">
-                <Button variant="ghost" size="sm">Sign In</Button>
+                <Button variant="ghost" size="sm" className={
+                  isScrolled
+                    ? ''
+                    : 'text-[#E8DCC8] hover:bg-[#E8DCC8]/10 hover:text-[#E8DCC8]'
+                }>Sign In</Button>
               </Link>
               <Link href="/sign-up">
-                <Button size="sm" className="group">
+                <Button size="sm" className={`group ${
+                  isScrolled
+                    ? ''
+                    : 'bg-[#E8DCC8] hover:bg-[#DDD3C0] text-[#3A3A3C] border-0'
+                }`}>
                   Get Started
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
