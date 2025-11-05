@@ -40,7 +40,7 @@ export default function Index() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center">
-              <svg width="180" height="40" viewBox="0 0 340 92" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto transition-all duration-300">
+              <svg width="116" height="40" viewBox="38 0 256 92" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto transition-all duration-300">
                 <g clipPath="url(#clip0_46_329)">
                   <path d="M78.3303 62.931H73.9624L65.115 40.5953L64.1719 38.188L62.931 35.0672L62.2547 33.3547L60.319 28.5029L58.135 34.0124L55.9573 39.5343L43.4555 71.1084H39.0876L53.7733 34.031L55.9573 28.5029L56.0566 28.2609L57.6697 24.1971H62.9931L64.4387 27.8701L64.6 28.2609L65.115 29.5453L67.2927 35.0672L78.3303 62.931Z" fill={isScrolled ? '#3F3F58' : '#E8DCC8'} className="transition-all duration-300"/>
                   <path d="M60.4617 50.3237L55.3244 63.3157L53.854 67.0507L53.7113 67.3982L53.6927 67.4354L52.2409 71.1084H47.8792L49.3248 67.4354L49.3496 67.3982L49.4923 67.0507L50.9566 63.3157L58.2777 44.8204L60.4617 50.3237Z" fill={isScrolled ? '#3F3F58' : '#E8DCC8'} className="transition-all duration-300"/>
