@@ -73,8 +73,8 @@ export default function Index() {
         <div className="max-w-7xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Hero Content */}
-            <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8DCC8]/10 border border-[#E8DCC8]/20 mb-8">
+            <div className="text-center lg:text-left flex flex-col justify-center">
+              <div className="inline-flex size-max items-center gap-2 px-4 py-2 rounded-full bg-[#E8DCC8]/10 border border-[#E8DCC8]/20 mb-8">
                 <Sparkles className="h-4 w-4 text-[#E8DCC8]" />
                 <span className="text-sm font-medium text-[#E8DCC8]">AI-Powered Marketing Platform</span>
               </div>
@@ -101,7 +101,7 @@ export default function Index() {
                   </Button>
                 </Link>
                 <Link href="/sign-in">
-                  <Button size="lg" variant="outline" className="text-base px-8 border-[#E8DCC8]/40 text-[#E8DCC8] hover:bg-[#E8DCC8]/10 hover:text-[#E8DCC8]">
+                  <Button size="lg" variant="outline" className="text-base px-8 border-[#E8DCC8]/40 text-primary-background hover:bg-[#E8DCC8]/10 hover:text-[#E8DCC8]">
                     Watch Demo
                   </Button>
                 </Link>
@@ -125,14 +125,14 @@ export default function Index() {
             </div>
 
             {/* Hero Image */}
-            <div className="relative lg:order-last">
-              <div className="relative w-[480px] rounded-2xl overflow-hidden shadow-2xl border-2 border-[#E8DCC8]/10 bg-gradient-to-br from-[#2F2F31] via-[#3A3A3C] to-[#2F2F31]">
+            <div className="relative lg:order-last flex items-center justify-center lg:justify-end">
+              <div className="relative w-full max-w-[600px] rounded-2xl overflow-hidden shadow-2xl border-2 border-[#E8DCC8]/10 bg-gradient-to-br from-[#2F2F31] via-[#3A3A3C] to-[#2F2F31]">
                 <Image
                   src="/hero.svg"
                   alt="AB360 Platform Dashboard"
-                  width={480}
-                  height={400}
-                  className=" opacity-90"
+                  width={1200}
+                  height={750}
+                  className="w-full h-auto opacity-90"
                   priority
                 />
                 {/* Floating Elements */}
